@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" styleClass="form" fx:controller="com.estateflow.controller.MaintenanceFormController">
+  <Label text="Property *" GridPane.rowIndex="0"/><ComboBox fx:id="propertyBox" prefWidth="300" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+  <Label text="Reported by (tenant)" GridPane.rowIndex="1"/><ComboBox fx:id="tenantBox" prefWidth="300" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+  <Label text="Title *" GridPane.rowIndex="2"/><TextField fx:id="titleField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+  <Label text="Description" GridPane.rowIndex="3"/><TextArea fx:id="descriptionArea" prefRowCount="3" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+  <Label text="Priority" GridPane.rowIndex="4"/><ComboBox fx:id="priorityBox" prefWidth="200" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+  <Label text="Reported date *" GridPane.rowIndex="5"/><DatePicker fx:id="reportedPicker" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+  <Label text="Assigned to" GridPane.rowIndex="6"/><TextField fx:id="assignedField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+  <Label text="Cost" GridPane.rowIndex="7"/><TextField fx:id="costField" promptText="Only while in progress or resolved" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+  <HBox spacing="8" GridPane.rowIndex="8" GridPane.columnIndex="1">
+    <Button fx:id="saveButton" styleClass="button-primary" text="Save" onAction="#onSave" defaultButton="true"/>
+    <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
+</GridPane>

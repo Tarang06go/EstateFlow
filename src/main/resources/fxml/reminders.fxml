@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.RentRemindersController">
+  <Label styleClass="screen-title" text="Rent reminders"/>
+  <Label fx:id="hintLabel" styleClass="hint"/>
+  <FlowPane hgap="12" vgap="12">
+    <VBox styleClass="card"><Label fx:id="overdueValue" styleClass="card-value status-bad"/><Label styleClass="card-label" text="Overdue"/></VBox>
+    <VBox styleClass="card"><Label fx:id="todayValue" styleClass="card-value status-warn"/><Label styleClass="card-label" text="Due today"/></VBox>
+    <VBox styleClass="card"><Label fx:id="upcomingValue" styleClass="card-value"/><Label fx:id="upcomingLabel" styleClass="card-label"/></VBox>
+    <VBox styleClass="card"><Label fx:id="totalValue" styleClass="card-value"/><Label styleClass="card-label" text="Total unpaid in this list"/></VBox>
+  </FlowPane>
+  <HBox spacing="8"><Region HBox.hgrow="ALWAYS"/>
+    <Button text="Open rent ledger" onAction="#onLedger"/>
+    <Button text="Export..." onAction="#onExport"/>
+    <Button text="Refresh" onAction="#reload"/></HBox>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

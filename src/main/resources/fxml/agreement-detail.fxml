@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" prefWidth="520" fx:controller="com.estateflow.controller.AgreementDetailController">
+  <Label fx:id="summaryLabel" wrapText="true"/>
+  <Label text="Notes (the only editable term, BR-16)"/>
+  <TextArea fx:id="notesArea" prefRowCount="3"/>
+  <Button fx:id="notesButton" text="Save notes" onAction="#onSaveNotes"/>
+  <Separator/>
+  <Label text="Terminate agreement"/>
+  <HBox spacing="8"><DatePicker fx:id="terminationPicker"/>
+    <Button fx:id="terminateButton" styleClass="button-danger" text="Terminate" onAction="#onTerminate"/></HBox>
+  <Label styleClass="hint" wrapText="true" text="Rent periods starting after the termination date are cancelled. Termination is refused while valid payments exist for those periods."/>
+  <HBox spacing="8"><Button text="Open rent ledger" onAction="#onLedger"/><Button text="Close" onAction="#onClose"/></HBox>
+</VBox>

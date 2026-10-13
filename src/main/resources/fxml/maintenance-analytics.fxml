@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #f4f6f8;"
+            fx:controller="com.estateflow.controller.MaintenanceAnalyticsController">
+  <VBox styleClass="screen">
+    <HBox spacing="8"><Label styleClass="screen-title" text="Maintenance analytics"/><Region HBox.hgrow="ALWAYS"/>
+      <Button text="Back to requests" onAction="#onBack"/><Button text="Refresh" onAction="#reload"/></HBox>
+    <Label styleClass="section-title" text="Requests by status"/>
+    <FlowPane fx:id="statusBox" hgap="12" vgap="12"/>
+    <Label styleClass="section-title" text="Open requests by priority (open + in progress)"/>
+    <FlowPane fx:id="priorityBox" hgap="12" vgap="12"/>
+    <Label styleClass="section-title" text="Recorded costs (BR-32: only in-progress and resolved work)"/>
+    <FlowPane hgap="12" vgap="12">
+      <VBox styleClass="card"><Label fx:id="resolvedCost" styleClass="card-value"/><Label styleClass="card-label" text="Resolved work"/></VBox>
+      <VBox styleClass="card"><Label fx:id="inProgressCost" styleClass="card-value"/><Label styleClass="card-label" text="Work in progress"/></VBox>
+      <VBox styleClass="card"><Label fx:id="totalCost" styleClass="card-value"/><Label styleClass="card-label" text="Total recorded cost"/></VBox>
+      <VBox styleClass="card"><Label fx:id="averageDays" styleClass="card-value"/><Label styleClass="card-label" text="Average days to resolve"/></VBox>
+    </FlowPane>
+    <FlowPane hgap="14" vgap="14">
+      <VBox styleClass="chart-card" prefWidth="520"><Label styleClass="chart-title" text="Cost per month (last 6 months)"/>
+        <StackPane>
+          <BarChart fx:id="costChart" legendVisible="false" animated="false" prefHeight="260" prefWidth="496">
+            <xAxis><CategoryAxis/></xAxis><yAxis><NumberAxis label="Rs."/></yAxis>
+          </BarChart>
+          <Label fx:id="costEmpty" styleClass="empty-state" text="No maintenance cost recorded in the last 6 months." visible="false"/>
+        </StackPane>
+      </VBox>
+      <VBox styleClass="chart-card" prefWidth="520"><Label styleClass="chart-title" text="Top properties by maintenance cost"/>
+        <TableView fx:id="propertyTable" prefHeight="260"/>
+      </VBox>
+    </FlowPane>
+  </VBox>
+</ScrollPane>

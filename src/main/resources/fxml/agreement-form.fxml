@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" styleClass="form" fx:controller="com.estateflow.controller.AgreementFormController">
+  <Label text="Property *" GridPane.rowIndex="0"/><ComboBox fx:id="propertyBox" prefWidth="320" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+  <Label text="Tenant *" GridPane.rowIndex="1"/><ComboBox fx:id="tenantBox" prefWidth="320" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+  <Label text="Start date *" GridPane.rowIndex="2"/><DatePicker fx:id="startPicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+  <Label text="Duration (months) *" GridPane.rowIndex="3"/><TextField fx:id="monthsField" text="12" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+  <Label text="Monthly rent *" GridPane.rowIndex="4"/><TextField fx:id="rentField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+  <Label text="Security deposit" GridPane.rowIndex="5"/><TextField fx:id="depositField" text="0" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+  <Label text="Notes" GridPane.rowIndex="6"/><TextField fx:id="notesField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+  <Label fx:id="previewLabel" styleClass="hint" wrapText="true" prefWidth="320" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+  <HBox spacing="8" GridPane.rowIndex="8" GridPane.columnIndex="1">
+    <Button fx:id="saveButton" styleClass="button-primary" text="Create agreement" onAction="#onSave" defaultButton="true"/>
+    <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
+</GridPane>

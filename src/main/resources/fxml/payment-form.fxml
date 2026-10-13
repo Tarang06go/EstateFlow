@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" styleClass="form" fx:controller="com.estateflow.controller.PaymentFormController">
+  <Label fx:id="chargeLabel" wrapText="true" prefWidth="330" GridPane.columnSpan="2"/>
+  <Label text="Amount *" GridPane.rowIndex="1"/><TextField fx:id="amountField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+  <Label text="Payment date *" GridPane.rowIndex="2"/><DatePicker fx:id="datePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+  <Label text="Method *" GridPane.rowIndex="3"/><ComboBox fx:id="methodBox" prefWidth="200" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+  <Label text="Reference" GridPane.rowIndex="4"/><TextField fx:id="referenceField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+  <Label text="Notes" GridPane.rowIndex="5"/><TextField fx:id="notesField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+  <HBox spacing="8" GridPane.rowIndex="6" GridPane.columnIndex="1">
+    <Button fx:id="saveButton" styleClass="button-primary" text="Record" onAction="#onSave" defaultButton="true"/>
+    <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
+</GridPane>

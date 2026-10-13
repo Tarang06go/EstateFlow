@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.RentLedgerController">
+  <Label styleClass="screen-title" text="Rent &amp; payments"/>
+  <HBox spacing="8"><Label text="Agreement:"/><ComboBox fx:id="agreementBox" prefWidth="460"/>
+    <Label fx:id="outstandingLabel" styleClass="status-bad"/></HBox>
+  <Label styleClass="hint" text="Rent charges (a period becomes payable on its due date; advance payments are not accepted)"/>
+  <TableView fx:id="chargeTable" prefHeight="260"/>
+  <HBox spacing="8">
+    <Button fx:id="payButton" styleClass="button-primary" text="Record payment" onAction="#onPay"/>
+    <Button text="Void payment" onAction="#onVoid"/>
+    <Button text="Save receipt..." onAction="#onReceipt"/></HBox>
+  <Label styleClass="hint" text="Payments for the selected charge (voided payments are greyed and excluded from balances)"/>
+  <TableView fx:id="paymentTable" VBox.vgrow="ALWAYS"/>
+</VBox>

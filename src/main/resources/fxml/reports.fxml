@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.ReportsController">
+  <Label styleClass="screen-title" text="Reports &amp; exports"/>
+  <HBox spacing="8"><Label text="Format"/><ComboBox fx:id="formatBox" prefWidth="170"/>
+    <Label styleClass="hint" text="PDF for printing and sharing, CSV for Excel."/></HBox>
+  <HBox spacing="8"><Label text="Payments from"/><DatePicker fx:id="fromPicker"/><Label text="to"/><DatePicker fx:id="toPicker"/>
+    <Button text="Export payments..." onAction="#onPayments"/></HBox>
+  <HBox spacing="8"><Label text="Overdue rent as of today"/><Button text="Export overdue rent..." onAction="#onOverdue"/></HBox>
+  <HBox spacing="8"><Label text="Property occupancy as of today"/><Button text="Export occupancy..." onAction="#onOccupancy"/></HBox>
+  <HBox spacing="8"><Label text="Maintenance status"/><ComboBox fx:id="statusBox" prefWidth="160"/>
+    <Button text="Export maintenance..." onAction="#onMaintenance"/></HBox>
+  <HBox spacing="8"><Label text="Rent reminders (overdue and upcoming)"/><Button text="Export rent reminders..." onAction="#onReminders"/></HBox>
+  <Label fx:id="resultLabel" styleClass="hint"/>
+</VBox>

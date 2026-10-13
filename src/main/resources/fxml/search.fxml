@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.SearchController">
+  <Label styleClass="screen-title" text="Search results"/>
+  <HBox spacing="8"><TextField fx:id="searchField" promptText="Name, phone, property, receipt no. (min. 2 characters)" prefWidth="420" onAction="#onSearch"/>
+    <Button styleClass="button-primary" text="Search" onAction="#onSearch"/><Label fx:id="summaryLabel" styleClass="hint"/></HBox>
+  <Label styleClass="hint" text="Each category shows at most 15 matches. Double-click a property to open its details."/>
+  <TabPane fx:id="tabs" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+    <Tab fx:id="ownersTab" text="Owners"><TableView fx:id="ownerTable"/></Tab>
+    <Tab fx:id="tenantsTab" text="Tenants"><TableView fx:id="tenantTable"/></Tab>
+    <Tab fx:id="propertiesTab" text="Properties"><TableView fx:id="propertyTable"/></Tab>
+    <Tab fx:id="agreementsTab" text="Agreements"><TableView fx:id="agreementTable"/></Tab>
+    <Tab fx:id="paymentsTab" text="Payments"><TableView fx:id="paymentTable"/></Tab>
+  </TabPane>
+</VBox>

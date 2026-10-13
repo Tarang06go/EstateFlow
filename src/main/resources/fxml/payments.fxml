@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.PaymentsController">
+  <Label styleClass="screen-title" text="Payments"/>
+  <HBox spacing="8" alignment="CENTER_LEFT">
+    <TextField fx:id="searchField" promptText="Tenant, property, reference or receipt no." prefWidth="290" onAction="#reload"/>
+    <Label text="From"/><DatePicker fx:id="fromPicker" prefWidth="130"/>
+    <Label text="To"/><DatePicker fx:id="toPicker" prefWidth="130"/>
+    <ComboBox fx:id="statusBox" prefWidth="110"/>
+    <Button styleClass="button-primary" text="Search" onAction="#reload"/>
+    <Button text="Clear" onAction="#onClear"/>
+  </HBox>
+  <HBox spacing="8"><Label fx:id="countLabel" styleClass="hint"/><Region HBox.hgrow="ALWAYS"/>
+    <Button text="Save receipt..." onAction="#onReceipt"/></HBox>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

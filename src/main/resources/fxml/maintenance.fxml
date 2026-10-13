@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.MaintenanceListController">
+  <Label styleClass="screen-title" text="Maintenance requests"/>
+  <HBox spacing="8"><Label text="Status:"/><ComboBox fx:id="statusFilter" prefWidth="160"/><Region HBox.hgrow="ALWAYS"/>
+    <Button styleClass="button-primary" text="New request" onAction="#onAdd"/>
+    <Button text="Edit" onAction="#onEdit"/>
+    <Button text="Change status..." onAction="#onChangeStatus"/>
+    <Button text="Analytics" onAction="#onAnalytics"/></HBox>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

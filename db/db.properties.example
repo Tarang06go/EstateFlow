@@ -1,0 +1,7 @@
+# Copy to db.properties (project root) and fill in. db.properties is git-ignored and never committed.
+# useAffectedRows=false (the Connector/J default) is required: UPDATE must report MATCHED rows.
+# connectionTimeZone=UTC keeps TIMESTAMP columns (voided_at, cancelled_at) in UTC; the app also sets the session zone.
+# If Connector/J reports a public-key retrieval error on a local server, add allowPublicKeyRetrieval=true (local use only).
+db.url=jdbc:mysql://localhost:3306/estateflow?useAffectedRows=false&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&preserveInstants=true
+db.username=YOUR_LOCAL_MYSQL_USERNAME
+db.password=REPLACE_WITH_YOUR_LOCAL_PASSWORD

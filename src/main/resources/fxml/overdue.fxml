@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.OverdueRentController">
+  <Label styleClass="screen-title" text="Overdue rent"/>
+  <HBox spacing="8"><Label fx:id="totalLabel" styleClass="status-bad"/><Region HBox.hgrow="ALWAYS"/>
+    <Button text="Open rent ledger" onAction="#onLedger"/><Button text="Export CSV..." onAction="#onExport"/>
+    <Button text="Refresh" onAction="#reload"/></HBox>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

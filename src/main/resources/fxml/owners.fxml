@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.OwnerListController">
+  <Label styleClass="screen-title" text="Owners"/>
+  <HBox spacing="8">
+    <TextField fx:id="searchField" promptText="Search name, phone, email, address" prefWidth="320" onAction="#reload"/>
+    <Button text="Search" onAction="#reload"/><Region HBox.hgrow="ALWAYS"/>
+    <Button styleClass="button-primary" text="Add owner" onAction="#onAdd"/>
+    <Button text="Edit" onAction="#onEdit"/>
+    <Button fx:id="toggleButton" text="Deactivate / Reactivate" onAction="#onToggleActive"/>
+  </HBox>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

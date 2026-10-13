@@ -1,0 +1,5 @@
+# Copy to db-test.properties (project root, git-ignored). The schema name MUST end with _test;
+# the test harness refuses anything else and never falls back to db.properties.
+db.url=jdbc:mysql://localhost:3306/estateflow_test?useAffectedRows=false&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&preserveInstants=true
+db.username=YOUR_TEST_MYSQL_USERNAME
+db.password=REPLACE_WITH_YOUR_TEST_PASSWORD

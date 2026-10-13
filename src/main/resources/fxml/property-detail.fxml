@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" prefWidth="940" prefHeight="620" fx:controller="com.estateflow.controller.PropertyDetailController">
+  <Label fx:id="titleLabel" styleClass="screen-title"/>
+  <Label fx:id="subtitleLabel" styleClass="hint"/>
+  <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+    <Tab text="Overview">
+      <GridPane styleClass="form" hgap="16" vgap="12">
+        <Label styleClass="kv-key" text="Owner" GridPane.rowIndex="0"/><Label fx:id="ownerValue" styleClass="kv-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label styleClass="kv-key" text="Type" GridPane.rowIndex="1"/><Label fx:id="typeValue" styleClass="kv-value" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label styleClass="kv-key" text="Details" GridPane.rowIndex="2"/><Label fx:id="detailsValue" styleClass="kv-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label styleClass="kv-key" text="Listed rent" GridPane.rowIndex="3"/><Label fx:id="rentValue" styleClass="kv-value" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label styleClass="kv-key" text="Current tenant" GridPane.rowIndex="4"/><Label fx:id="tenantValue" styleClass="kv-value" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <Label styleClass="kv-key" text="Current agreement" GridPane.rowIndex="5"/><Label fx:id="agreementValue" styleClass="kv-value" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label styleClass="kv-key" text="Outstanding rent" GridPane.rowIndex="6"/><Label fx:id="outstandingValue" styleClass="kv-value" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Label styleClass="kv-key" text="Maintenance cost to date" GridPane.rowIndex="7"/><Label fx:id="maintenanceCostValue" styleClass="kv-value" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+      </GridPane>
+    </Tab>
+    <Tab fx:id="agreementsTab" text="Agreements"><TableView fx:id="agreementTable"/></Tab>
+    <Tab fx:id="paymentsTab" text="Payments"><TableView fx:id="paymentTable"/></Tab>
+    <Tab fx:id="maintenanceTab" text="Maintenance"><TableView fx:id="maintenanceTable"/></Tab>
+  </TabPane>
+  <Button text="Close" onAction="#onClose"/>
+</VBox>

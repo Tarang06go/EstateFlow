@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.ExpiringLeasesController">
+  <Label styleClass="screen-title" text="Expiring leases"/>
+  <HBox spacing="8"><Label fx:id="hintLabel" styleClass="hint"/><Region HBox.hgrow="ALWAYS"/><Button text="Refresh" onAction="#reload"/></HBox>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

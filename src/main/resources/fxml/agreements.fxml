@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.AgreementListController">
+  <Label styleClass="screen-title" text="Rental agreements"/>
+  <HBox spacing="8">
+    <TextField fx:id="searchField" promptText="Search property, tenant or agreement no." prefWidth="300" onAction="#reload"/>
+    <ComboBox fx:id="filterBox" prefWidth="140"/>
+    <Button text="Search" onAction="#reload"/>
+    <Button text="Clear" onAction="#onClear"/>
+    <Region HBox.hgrow="ALWAYS"/>
+    <Button styleClass="button-primary" text="New agreement" onAction="#onAdd"/>
+    <Button text="Details / Terminate" onAction="#onDetails"/>
+    <Button text="Rent ledger" onAction="#onLedger"/>
+    </HBox>
+  <Label fx:id="countLabel" styleClass="hint"/>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

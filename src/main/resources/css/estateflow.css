@@ -1,0 +1,46 @@
+/* EstateFlow v1.1 theme: navy sidebar, blue accent, soft grey canvas, white cards. */
+.root { -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; -fx-font-size: 13px; -fx-base: #f4f6f8;
+        -fx-background: #f4f6f8; -fx-accent: #2f6fed; -fx-focus-color: #2f6fed; -fx-faint-focus-color: transparent; }
+.sidebar { -fx-background-color: #1f2d3d; -fx-padding: 16 10 16 10; -fx-spacing: 3; -fx-min-width: 214; }
+.sidebar-title { -fx-text-fill: white; -fx-font-size: 21px; -fx-font-weight: bold; -fx-padding: 0 0 4 6; }
+.sidebar-subtitle { -fx-text-fill: #8fa3b8; -fx-font-size: 11px; -fx-padding: 0 0 12 6; }
+.sidebar-search { -fx-background-color: #2e4057; -fx-text-fill: white; -fx-prompt-text-fill: #8fa3b8; -fx-background-radius: 6; -fx-padding: 7 10 7 10; }
+.sidebar-section { -fx-text-fill: #6f859b; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 12 0 2 8; }
+.nav-button { -fx-background-color: transparent; -fx-text-fill: #cfd8e3; -fx-alignment: CENTER_LEFT; -fx-pref-width: 194; -fx-padding: 8 12 8 12; -fx-cursor: hand; -fx-background-radius: 6; }
+.nav-button:hover { -fx-background-color: #2e4057; -fx-text-fill: white; }
+.screen { -fx-padding: 20; -fx-spacing: 12; -fx-background-color: #f4f6f8; }
+.screen-title { -fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1f2d3d; }
+.section-title { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1f2d3d; -fx-padding: 6 0 0 0; }
+.hint { -fx-text-fill: #6b7a8c; }
+.empty-state { -fx-text-fill: #8a97a8; -fx-font-size: 13px; -fx-font-style: italic; }
+.form { -fx-padding: 20; -fx-hgap: 12; -fx-vgap: 10; -fx-background-color: white; -fx-min-width: 420; }
+.form .label { -fx-text-fill: #44546a; }
+.text-field, .combo-box, .date-picker { -fx-background-radius: 5; }
+.card { -fx-background-color: white; -fx-background-radius: 10; -fx-border-color: #dde3ea; -fx-border-radius: 10; -fx-padding: 14 16 14 16; -fx-spacing: 4; -fx-min-width: 190;
+        -fx-effect: dropshadow(gaussian, rgba(31,45,61,0.07), 8, 0, 0, 2); }
+.card-value { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f2d3d; }
+.card-label { -fx-text-fill: #6b7a8c; }
+.chart-card { -fx-background-color: white; -fx-background-radius: 10; -fx-border-color: #dde3ea; -fx-border-radius: 10; -fx-padding: 12; -fx-spacing: 6;
+              -fx-effect: dropshadow(gaussian, rgba(31,45,61,0.07), 8, 0, 0, 2); }
+.chart-title { -fx-font-weight: bold; -fx-text-fill: #1f2d3d; }
+.default-color0.chart-bar { -fx-bar-fill: #2f6fed; }
+.button { -fx-background-radius: 6; -fx-cursor: hand; }
+.button-primary { -fx-background-color: #2f6fed; -fx-text-fill: white; -fx-font-weight: bold; }
+.button-primary:hover { -fx-background-color: #2459c7; }
+.button-danger { -fx-background-color: #c0392b; -fx-text-fill: white; }
+.button-danger:hover { -fx-background-color: #a52e22; }
+.table-view { -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #dde3ea; }
+.table-view .column-header-background { -fx-background-color: #e8edf3; }
+.table-view .column-header .label { -fx-font-weight: bold; -fx-text-fill: #33445a; }
+.table-view .table-row-cell { -fx-cell-size: 30px; }
+.table-view .table-row-cell:odd { -fx-background-color: #f9fafc; }
+.table-view .table-row-cell:selected { -fx-background-color: #cfe0ff; }
+.table-view .placeholder .label { -fx-text-fill: #8a97a8; }
+.tab-pane > .tab-header-area > .headers-region > .tab { -fx-padding: 5 14 5 14; }
+.status-ok { -fx-text-fill: #1e8e3e; } .status-warn { -fx-text-fill: #b26a00; } .status-bad { -fx-text-fill: #c0392b; }
+.row-overdue { -fx-background-color: #fdeceb !important; }
+.row-today { -fx-background-color: #fff4dd !important; }
+.row-upcoming { -fx-background-color: #eef6ff !important; }
+.row-void { -fx-opacity: 0.55; }
+.badge { -fx-background-radius: 10; -fx-padding: 2 9 2 9; -fx-font-size: 11px; -fx-font-weight: bold; }
+.kv-key { -fx-text-fill: #6b7a8c; } .kv-value { -fx-font-weight: bold; -fx-text-fill: #1f2d3d; }
