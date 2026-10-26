@@ -14,14 +14,23 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 class SceneNavigatorLayoutTest {
+
     @BeforeAll
     static void startJavaFxToolkit() throws Exception {
         CountDownLatch started = new CountDownLatch(1);
-        Platform.startup(started::countDown);
+
+        try {
+            Platform.startup(started::countDown);
+        } catch (IllegalStateException alreadyStarted) {
+            started.countDown();
+        }
+
         if (!started.await(10, TimeUnit.SECONDS)) {
             throw new IllegalStateException("JavaFX toolkit did not start");
         }
     }
+
+
 
     @Test
     void unwrapsPageRootScrollPaneIntoTheSharedShellViewport() throws Exception {

@@ -197,7 +197,8 @@
 .status-ok { -fx-text-fill: -ef-success; } .status-warn { -fx-text-fill: -ef-warning; } .status-bad { -fx-text-fill: -ef-danger; }
 
 /* ---------- Floating local property assistant ---------- */
-.assistant-dock { -fx-background-color: transparent; }
+/* No background at all: a transparent fill is still a hit-testable fill, so it would swallow clicks and wheel events over the page beneath the dock. */
+.assistant-dock { -fx-background-color: null; -fx-background-insets: 0; }
 .assistant-panel {
     -fx-background-color: -ef-surface;
     -fx-background-radius: 18;
