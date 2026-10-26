@@ -1,5 +1,7 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.*;
 import com.estateflow.dto.AgreementListRow;
 import com.estateflow.dto.ExpiringLeaseRow;
@@ -40,9 +42,13 @@ public class AgreementService {
     private final Clock clock;
     private final int warningDays;
 
+    private final Authorizer auth;
+
     public AgreementService(AgreementDao agreementDao, RentChargeDao chargeDao, PaymentDao paymentDao,
                             PropertyDao propertyDao, TenantDao tenantDao, TransactionManager tx,
-                            AuditService audit, Clock clock, int warningDays) {
+                            AuditService audit, Clock clock, int warningDays,
+            Authorizer auth) {
+        this.auth = auth;
         this.agreementDao = agreementDao;
         this.chargeDao = chargeDao;
         this.paymentDao = paymentDao;
@@ -61,6 +67,7 @@ public class AgreementService {
     public RentalAgreement create(Long propertyId, Long tenantId, LocalDate startDate, int durationMonths,
                                   BigDecimal monthlyRent, BigDecimal securityDeposit, String notes)
             throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         BigDecimal deposit = securityDeposit == null ? BigDecimal.ZERO : securityDeposit;
         validateCreate(propertyId, tenantId, startDate, durationMonths, monthlyRent, deposit, notes);
         LocalDate endDate = RentScheduleGenerator.endDate(startDate, durationMonths);
@@ -113,6 +120,7 @@ public class AgreementService {
      * termination date. Rejected if a valid payment exists on any such charge.
      */
     public RentalAgreement terminate(Long agreementId, LocalDate terminationDate) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         if (agreementId == null) {
             throw new ValidationException("Select an agreement.", "agreement");
         }
@@ -154,18 +162,24 @@ public class AgreementService {
 
     /** BR-16: only the notes of an agreement can be edited. */
     public RentalAgreement updateNotes(Long agreementId, String notes) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         if (notes != null && notes.length() > 500) {
             throw new ValidationException("Notes cannot exceed 500 characters.", "notes");
         }
         RentalAgreement a = get(agreementId);
         a.setNotes(blankToNull(notes));
-        if (agreementDao.update(a) == 0) {
-            throw new EntityNotFoundException("The agreement was changed by someone else. Refresh and try again.");
-        }
+        tx.runInTransaction(() -> {
+            if (agreementDao.update(a) == 0) {
+                throw new EntityNotFoundException("The agreement was changed by someone else. Refresh and try again.");
+            }
+            audit.record("AGREEMENT", agreementId, "NOTES_UPDATED", null, AuditService.details("notesLength",
+                    a.getNotes() == null ? 0 : a.getNotes().length())); // content is not logged: notes may hold personal details
+        });
         return a;
     }
 
     public RentalAgreement get(Long agreementId) throws EntityNotFoundException {
+        auth.require(Permission.VIEW_DATA);
         if (agreementId == null) {
             throw new EntityNotFoundException("Agreement not found.");
         }
@@ -178,21 +192,25 @@ public class AgreementService {
     }
 
     public List<AgreementListRow> findAllRows() {
+        auth.require(Permission.VIEW_DATA);
         return agreementDao.findAllRows();
     }
 
     public List<RentalAgreement> findByProperty(Long propertyId) {
+        auth.require(Permission.VIEW_DATA);
         return agreementDao.findByProperty(propertyId);
     }
 
     /** Agreements whose effective period ends within the configured warning window (BR-27). */
     public List<ExpiringLeaseRow> findEndingSoon() {
+        auth.require(Permission.VIEW_DATA);
         LocalDate today = LocalDate.now(clock);
         return agreementDao.findEndingBetween(today, today.plusDays(warningDays));
     }
 
     /** Filtered, capped agreement rows for the agreements screen. */
     public List<AgreementListRow> searchRows(String text, AgreementFilter filter) {
+        auth.require(Permission.VIEW_DATA);
         return agreementDao.searchRows(text, filter, LocalDate.now(clock), ROW_LIMIT);
     }
 

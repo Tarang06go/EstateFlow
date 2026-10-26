@@ -1,5 +1,6 @@
 package com.estateflow.service;
 
+import com.estateflow.support.TestAuth;
 import com.estateflow.dao.*;
 import com.estateflow.exception.*;
 import com.estateflow.model.*;
@@ -33,7 +34,7 @@ class AgreementServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new AgreementService(agreementDao, chargeDao, paymentDao, propertyDao, tenantDao, tx, AuditService.noop(), CLOCK, 30);
+        service = new AgreementService(agreementDao, chargeDao, paymentDao, propertyDao, tenantDao, tx, AuditService.noop(), CLOCK, 30, TestAuth.admin());
         when(propertyDao.findByIdForUpdate(1L)).thenReturn(Optional.of(property(1L, 1L, true)));
         when(tenantDao.findById(2L)).thenReturn(Optional.of(tenant(2L, true)));
         when(agreementDao.findOverlapping(anyLong(), any(), any())).thenReturn(List.of());

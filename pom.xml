@@ -7,7 +7,7 @@
 
     <groupId>com.estateflow</groupId>
     <artifactId>estateflow</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.3.0</version>
 
     <properties>
         <maven.compiler.release>25</maven.compiler.release>
@@ -32,6 +32,51 @@
     </properties>
 
     <dependencies>
+
+        <!-- JavaCPP OpenCV bindings and Windows x64 native runtime only; no all-platform preset. -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacpp</artifactId>
+            <version>1.5.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacpp</artifactId>
+            <version>1.5.14</version>
+            <classifier>windows-x86_64</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>opencv</artifactId>
+            <version>4.14.0-1.5.14</version>
+            <exclusions>
+                <exclusion><groupId>org.bytedeco</groupId><artifactId>openblas</artifactId></exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>openblas</artifactId>
+            <version>0.3.34-1.5.14</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>openblas</artifactId>
+            <version>0.3.34-1.5.14</version>
+            <classifier>windows-x86_64</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>opencv</artifactId>
+            <version>4.14.0-1.5.14</version>
+            <classifier>windows-x86_64</classifier>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion><groupId>org.bytedeco</groupId><artifactId>openblas</artifactId></exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -97,7 +142,7 @@
                 <version>${maven.surefire.plugin.version}</version>
                 <configuration>
                     <!-- @{argLine} carries the JaCoCo agent; the Mockito agent avoids self-attach warnings on JDK 25 -->
-                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar} -Duser.timezone=UTC</argLine>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar} -Duser.timezone=UTC --enable-native-access=ALL-UNNAMED</argLine>
                     <groups>${test.groups}</groups>
                     <excludedGroups>${test.excludedGroups}</excludedGroups>
                 </configuration>
@@ -124,6 +169,7 @@
                 <version>${javafx.maven.plugin.version}</version>
                 <configuration>
                     <mainClass>com.estateflow.Launcher</mainClass>
+                    <options><option>--enable-native-access=ALL-UNNAMED</option></options>
                 </configuration>
             </plugin>
 

@@ -35,8 +35,8 @@ public class PaymentFormController extends AbstractDialogController {
     void init(RentCharge charge, Runnable onSaved) {
         this.charge = charge;
         this.onSaved = onSaved;
-        chargeLabel.setText("Period " + DateFormats.format(charge.getPeriodStart()) + " - " + DateFormats.format(charge.getPeriodEnd())
-                + "\nDue " + DateFormats.format(charge.getDueDate()) + ", balance " + MoneyUtil.format(charge.getBalance()));
+        chargeLabel.setText("Period " + fmt.date(charge.getPeriodStart()) + " - " + fmt.date(charge.getPeriodEnd())
+                + "\nDue " + fmt.date(charge.getDueDate()) + ", balance " + fmt.money(charge.getBalance()));
         amountField.setText(charge.getBalance().toPlainString());
     }
 
@@ -50,6 +50,7 @@ public class PaymentFormController extends AbstractDialogController {
             String notes = InputParser.optionalText(notesField.getText());
             UiTask.run(() -> ctx.payments().recordPayment(charge.getChargeId(), amount, date, method, reference, notes), p -> {
                 close();
+                nav.toast("Payment recorded");
                 onSaved.run();
             }, saveButton);
         } catch (EstateFlowException e) {

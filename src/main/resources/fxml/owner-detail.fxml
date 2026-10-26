@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" prefWidth="820" prefHeight="540" fx:controller="com.estateflow.controller.OwnerDetailController">
+  <HBox alignment="CENTER_LEFT" spacing="10"><VBox styleClass="page-header"><Label fx:id="nameLabel" styleClass="page-title"/><Label fx:id="contactLabel" styleClass="page-subtitle"/></VBox>
+    <Region HBox.hgrow="ALWAYS"/><Label fx:id="statusBadge"/></HBox>
+  <HBox spacing="14" fx:id="kpiRow"/>
+  <Label styleClass="section-title" text="Properties"/>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+  <HBox styleClass="dialog-actions"><Button text="Close" onAction="#onClose"/></HBox>
+</VBox>

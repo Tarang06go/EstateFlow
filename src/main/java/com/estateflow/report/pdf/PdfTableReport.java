@@ -11,12 +11,12 @@ import java.util.List;
 /** Renders any {@link ReportDefinition} as a paginated landscape A4 table with a header and page footers. */
 public final class PdfTableReport {
 
-    static final float[] INK = {0.13f, 0.17f, 0.24f};
-    static final float[] MUTED = {0.42f, 0.47f, 0.55f};
-    static final float[] BRAND = {0.18f, 0.31f, 0.55f};
-    static final float[] ZEBRA = {0.95f, 0.96f, 0.98f};
+    static final float[] INK = {0.110f, 0.153f, 0.133f};
+    static final float[] MUTED = {0.400f, 0.443f, 0.416f};
+    static final float[] BRAND = {0.141f, 0.357f, 0.271f};
+    static final float[] ZEBRA = {0.965f, 0.969f, 0.957f};
     static final float[] WHITE = {1f, 1f, 1f};
-    static final float[] RULE = {0.80f, 0.83f, 0.88f};
+    static final float[] RULE = {0.890f, 0.910f, 0.890f};
 
     private static final float MARGIN = 36f;
     private static final float ROW_HEIGHT = 17f;
@@ -101,8 +101,9 @@ public final class PdfTableReport {
 
     private static void drawFirstHeader(SimplePdf pdf, String title, String subtitle) {
         pdf.fillRect(0, 0, pdf.width(), 58, BRAND);
-        pdf.text(MARGIN, 30, title, 17, true, WHITE);
-        pdf.textRight(pdf.width() - MARGIN, 30, "EstateFlow", 13, true, WHITE);
+        PdfLogo.drawOnDark(pdf, MARGIN, 13, 32);
+        pdf.text(MARGIN + 44, 35, title, 17, true, WHITE);
+        pdf.textRight(pdf.width() - MARGIN, 35, "EstateFlow", 13, true, WHITE);
         pdf.text(MARGIN, 76, subtitle == null ? "" : subtitle, 9.5f, false, MUTED);
     }
 

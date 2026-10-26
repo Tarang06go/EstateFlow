@@ -1,0 +1,11 @@
+package com.estateflow.dao.jdbc;
+import com.estateflow.dao.VendorDao;import com.estateflow.db.DatabaseManager;import com.estateflow.model.*;import java.sql.Types;import java.util.List;import java.util.Optional;
+public final class JdbcVendorDao extends BaseJdbcDao implements VendorDao{
+ private static final RowMapper<Vendor> MAP=rs->new Vendor(rs.getLong("vendor_id"),rs.getString("name"),VendorCategory.valueOf(rs.getString("service_category")),rs.getString("phone"),rs.getString("email"),rs.getString("address"),rs.getString("notes"),rs.getBoolean("is_active"));
+ public JdbcVendorDao(DatabaseManager db){super(db);}
+ @Override public boolean isAvailable(){return exists("check vendor table","SELECT 1 FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='maintenance_vendor'",Binder.NONE);}
+ @Override public Vendor insert(Vendor v){long id=insertReturningKey("insert vendor","INSERT INTO maintenance_vendor(name,service_category,phone,email,address,notes,is_active) VALUES(?,?,?,?,?,?,?)",ps->{ps.setString(1,v.name());ps.setString(2,v.category().name());ps.setString(3,v.phone());ps.setString(4,v.email());ps.setString(5,v.address());ps.setString(6,v.notes());ps.setBoolean(7,v.active());});return find(id).orElseThrow();}
+ @Override public int update(Vendor v){return executeUpdate("update vendor","UPDATE maintenance_vendor SET name=?,service_category=?,phone=?,email=?,address=?,notes=?,is_active=? WHERE vendor_id=?",ps->{ps.setString(1,v.name());ps.setString(2,v.category().name());ps.setString(3,v.phone());ps.setString(4,v.email());ps.setString(5,v.address());ps.setString(6,v.notes());ps.setBoolean(7,v.active());ps.setLong(8,v.id());});}
+ @Override public Optional<Vendor> find(long id){return queryOne("find vendor","SELECT * FROM maintenance_vendor WHERE vendor_id=?",ps->ps.setLong(1,id),MAP);}
+ @Override public List<Vendor> search(String text,boolean inactive){String q=text==null||text.isBlank()?null:like(text);return queryList("search vendors","SELECT * FROM maintenance_vendor WHERE (? IS NULL OR name LIKE ? OR service_category LIKE ? OR phone LIKE ?) AND (? OR is_active=1) ORDER BY is_active DESC,name LIMIT 1000",ps->{if(q==null){for(int i=1;i<=4;i++)ps.setNull(i,Types.VARCHAR);}else {ps.setString(1,q);ps.setString(2,q);ps.setString(3,q);ps.setString(4,q);}ps.setBoolean(5,inactive);},MAP);}
+}

@@ -50,13 +50,13 @@ public class SearchController extends AbstractController {
         TableUtil.column(agreementTable, "No.", 60, AgreementListRow::agreementId);
         TableUtil.column(agreementTable, "Property", 180, AgreementListRow::propertyName);
         TableUtil.column(agreementTable, "Tenant", 160, AgreementListRow::tenantName);
-        TableUtil.column(agreementTable, "Start", 110, r -> DateFormats.format(r.startDate()));
-        TableUtil.column(agreementTable, "Effective end", 120, r -> DateFormats.format(r.effectiveEndDate()));
+        TableUtil.column(agreementTable, "Start", 110, r -> fmt.date(r.startDate()));
+        TableUtil.column(agreementTable, "Effective end", 120, r -> fmt.date(r.effectiveEndDate()));
         TableUtil.column(paymentTable, "Receipt", 130, PaymentReportRow::receiptNumber);
-        TableUtil.column(paymentTable, "Date", 105, r -> DateFormats.format(r.paymentDate()));
+        TableUtil.column(paymentTable, "Date", 105, r -> fmt.date(r.paymentDate()));
         TableUtil.column(paymentTable, "Tenant", 160, PaymentReportRow::tenantName);
         TableUtil.column(paymentTable, "Property", 160, PaymentReportRow::propertyName);
-        TableUtil.column(paymentTable, "Amount", 110, r -> MoneyUtil.format(r.amount()));
+        TableUtil.column(paymentTable, "Amount", 110, r -> fmt.money(r.amount()));
         TableUtil.column(paymentTable, "Status", 80, r -> r.voided() ? "VOID" : "Valid");
         for (TableView<?> t : new TableView<?>[]{ownerTable, tenantTable, propertyTable, agreementTable, paymentTable}) {
             t.setPlaceholder(new Label("No matches."));

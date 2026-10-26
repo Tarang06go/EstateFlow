@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" styleClass="form" fx:controller="com.estateflow.controller.LeaseRenewController">
+  <Label fx:id="infoLabel" wrapText="true" maxWidth="440" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
+  <Label fx:id="monthsLabel" text="Months *" GridPane.rowIndex="1"/><TextField fx:id="monthsField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+  <Label fx:id="rentLabel" text="New monthly rent *" GridPane.rowIndex="2"/><TextField fx:id="rentField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+  <Label fx:id="depositLabel" text="Required deposit" GridPane.rowIndex="3"/><TextField fx:id="depositField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+  <CheckBox fx:id="carryBox" text="Carry the deposit held over to the new lease" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+  <Label text="Note" GridPane.rowIndex="5"/><TextField fx:id="noteField" promptText="Optional, kept in the lease history" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+  <Label fx:id="previewLabel" styleClass="hint" wrapText="true" maxWidth="440" GridPane.rowIndex="6" GridPane.columnSpan="2"/>
+  <HBox spacing="8" GridPane.rowIndex="7" GridPane.columnIndex="1">
+    <Button fx:id="saveButton" styleClass="btn-primary" text="Confirm" onAction="#onSave" defaultButton="true"/>
+    <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
+</GridPane>

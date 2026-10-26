@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER"
+            style="-fx-background-color: #F6F7F4;" fx:controller="com.estateflow.controller.AssistantController">
+  <VBox styleClass="page" spacing="12">
+    <VBox styleClass="page-header">
+      <Label styleClass="page-title" text="Property Assistant"/>
+      <Label styleClass="page-subtitle" text="Ask about EstateFlow records. Answers are generated locally from current authorized data."/>
+    </VBox>
+    <VBox styleClass="card" spacing="10">
+      <Label styleClass="card-title" text="Try a question"/>
+      <FlowPane hgap="8" vgap="8">
+        <Button text="Rent and arrears" onAction="#onRentPrompt"/>
+        <Button text="Leases ending soon" onAction="#onLeasePrompt"/>
+        <Button text="Maintenance" onAction="#onMaintenancePrompt"/>
+        <Button text="Cash flow trend" onAction="#onTrendPrompt"/>
+        <Button text="Portfolio summary" onAction="#onPortfolioPrompt"/>
+        <Button text="Tenant list" onAction="#onTenantPrompt"/>
+        <Button text="Vacant properties" onAction="#onVacancyPrompt"/>
+      </FlowPane>
+      <TextArea fx:id="questionArea" promptText="Ask about tenants, properties, rent, leases, maintenance, or financials..." prefRowCount="3" wrapText="true"/>
+      <HBox spacing="8" alignment="CENTER_LEFT"><Button fx:id="askButton" styleClass="btn-primary" text="Ask" onAction="#onAsk"/><Label styleClass="caption" text="Questions are not saved or sent outside this app."/></HBox>
+    </VBox>
+    <VBox styleClass="card" spacing="8">
+      <Label styleClass="card-title" text="Answer"/>
+      <TextArea fx:id="answerArea" prefRowCount="8" wrapText="true"/>
+      <Label fx:id="sourceLabel" styleClass="hint" wrapText="true"/>
+      <Label fx:id="timestampLabel" styleClass="caption"/>
+    </VBox>
+    <Label styleClass="caption" wrapText="true" text="This local assistant uses deterministic rules and existing services; it does not connect to a generative AI provider. Financial calculations come from EstateFlow reports. Estimates are labeled and explained."/>
+  </VBox>
+</ScrollPane>

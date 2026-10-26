@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" prefWidth="420" fx:controller="com.estateflow.controller.DeleteExpenseController">
+  <Label fx:id="infoLabel" wrapText="true"/>
+  <Label text="Reason for deleting * (1 to 255 characters)"/>
+  <TextArea fx:id="reasonArea" prefRowCount="3" wrapText="true"/>
+  <Label styleClass="hint" wrapText="true" text="The expense stays on record, marked deleted with this reason, and no longer counts in any total. Record a corrected expense afterwards if needed."/>
+  <HBox spacing="8"><Button fx:id="deleteButton" styleClass="btn-danger" text="Delete expense" onAction="#onDelete"/>
+    <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
+</VBox>

@@ -58,9 +58,9 @@ public class AgreementFormController extends AbstractDialogController {
                 return;
             }
             LocalDate end = RentScheduleGenerator.endDate(start, months);
-            previewLabel.setText(months + " monthly rent charges of " + MoneyUtil.format(rent) + ", total "
-                    + MoneyUtil.format(rent.multiply(BigDecimal.valueOf(months))) + ". Runs "
-                    + DateFormats.format(start) + " to " + DateFormats.format(end) + ". Rent is due on the first day of each period.");
+            previewLabel.setText(months + " monthly rent charges of " + fmt.money(rent) + ", total "
+                    + fmt.money(rent.multiply(BigDecimal.valueOf(months))) + ". Runs "
+                    + fmt.date(start) + " to " + fmt.date(end) + ". Rent is due on the first day of each period.");
         } catch (EstateFlowException e) {
             previewLabel.setText("");
         }
@@ -80,6 +80,7 @@ public class AgreementFormController extends AbstractDialogController {
             Long tenantId = tenant == null ? null : tenant.getId();
             UiTask.run(() -> ctx.agreements().create(propertyId, tenantId, start, months, rent, deposit, notes), saved -> {
                 close();
+                nav.toast("Agreement created");
                 onSaved.run();
             }, saveButton);
         } catch (EstateFlowException e) {

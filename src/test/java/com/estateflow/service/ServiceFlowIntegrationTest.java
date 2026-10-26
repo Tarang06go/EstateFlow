@@ -1,5 +1,6 @@
 package com.estateflow.service;
 
+import com.estateflow.support.TestAuth;
 import com.estateflow.dao.RentChargeDao;
 import com.estateflow.dao.jdbc.*;
 import com.estateflow.db.DatabaseManager;
@@ -157,7 +158,7 @@ class ServiceFlowIntegrationTest extends IntegrationTestBase {
         DatabaseManager db = ctx.databaseManager();
         AgreementService failing = new AgreementService(new JdbcAgreementDao(db),
                 new FailingChargeDao(new JdbcRentChargeDao(db)), new JdbcPaymentDao(db), new JdbcPropertyDao(db),
-                new JdbcTenantDao(db), new JdbcTransactionManager(db), ctx.audit(), CLOCK, 30);
+                new JdbcTenantDao(db), new JdbcTransactionManager(db), ctx.audit(), CLOCK, 30, TestAuth.admin());
 
         DataAccessException e = assertThrows(DataAccessException.class, () -> failing.create(property.getPropertyId(),
                 tenant.getId(), LocalDate.of(2026, 1, 1), 6, bd("1000.00"), null, null));

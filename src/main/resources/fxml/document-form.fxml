@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="form" spacing="12" fx:controller="com.estateflow.controller.DocumentFormController">
+ <Label styleClass="page-title" text="Add document"/><Label text="Original names are retained as display metadata. Files are stored under generated names." wrapText="true"/>
+ <Label text="Category"/><ComboBox fx:id="category" maxWidth="Infinity"/><Label text="Link to"/><ComboBox fx:id="linkType" maxWidth="Infinity"/><TextField fx:id="linkId" promptText="Related record ID"/><Label text="Choose file"/><HBox spacing="8"><TextField fx:id="fileName" editable="false" HBox.hgrow="ALWAYS"/><Button text="Browse…" onAction="#onBrowse"/></HBox>
+ <HBox spacing="8" alignment="CENTER_RIGHT"><Button text="Cancel" onAction="#onCancel"/><Button fx:id="saveButton" styleClass="btn-primary" text="Store document" onAction="#onSave"/></HBox>
+</VBox>

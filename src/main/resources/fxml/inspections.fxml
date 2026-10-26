@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.InspectionListController">
+ <VBox styleClass="page-header"><Label styleClass="page-title" text="Property inspections"/><Label styleClass="page-subtitle" text="Record structured condition findings and preserve completed inspection history."/></VBox>
+ <HBox spacing="8"><Region HBox.hgrow="ALWAYS"/><Button styleClass="btn-primary" text="New inspection" userData="MANAGE_RECORDS" onAction="#onAdd"/><Button text="Details" onAction="#onDetails"/><Button text="Create maintenance follow-up" userData="MANAGE_RECORDS" onAction="#onFollowUp"/><Button text="Complete" userData="MANAGE_RECORDS" onAction="#onComplete"/><Button text="Refresh" onAction="#reload"/></HBox>
+ <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

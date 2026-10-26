@@ -1,5 +1,7 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.AgreementDao;
 import com.estateflow.dao.OwnerDao;
 import com.estateflow.dao.ReportingDao;
@@ -23,8 +25,12 @@ public class SearchService {
     private final ReportingDao reportingDao;
     private final Clock clock;
 
+    private final Authorizer auth;
+
     public SearchService(OwnerDao ownerDao, TenantDao tenantDao, AgreementDao agreementDao, ReportingDao reportingDao,
-                         Clock clock) {
+                         Clock clock,
+            Authorizer auth) {
+        this.auth = auth;
         this.ownerDao = ownerDao;
         this.tenantDao = tenantDao;
         this.agreementDao = agreementDao;
@@ -33,6 +39,7 @@ public class SearchService {
     }
 
     public SearchResults search(String text) throws ValidationException {
+        auth.require(Permission.VIEW_DATA);
         String needle = text == null ? "" : text.trim();
         if (needle.length() < MIN_LENGTH) {
             throw new ValidationException("Type at least " + MIN_LENGTH + " characters to search.", "search");

@@ -24,11 +24,11 @@ public class OverdueRentController extends AbstractController {
         TableUtil.column(table, "Property", 160, OverdueRentRow::propertyName);
         TableUtil.column(table, "Tenant", 150, OverdueRentRow::tenantName);
         TableUtil.column(table, "Phone", 110, OverdueRentRow::tenantPhone);
-        TableUtil.column(table, "Period start", 110, r -> DateFormats.format(r.periodStart()));
-        TableUtil.column(table, "Due date", 110, r -> DateFormats.format(r.dueDate()));
-        TableUtil.column(table, "Amount due", 100, r -> MoneyUtil.format(r.amountDue()));
-        TableUtil.column(table, "Paid", 100, r -> MoneyUtil.format(r.amountPaid()));
-        TableUtil.column(table, "Balance", 100, r -> MoneyUtil.format(r.balance()));
+        TableUtil.column(table, "Period start", 110, r -> fmt.date(r.periodStart()));
+        TableUtil.column(table, "Due date", 110, r -> fmt.date(r.dueDate()));
+        TableUtil.column(table, "Amount due", 100, r -> fmt.money(r.amountDue()));
+        TableUtil.column(table, "Paid", 100, r -> fmt.money(r.amountPaid()));
+        TableUtil.column(table, "Balance", 100, r -> fmt.money(r.balance()));
         TableUtil.column(table, "Days overdue", 100, OverdueRentRow::daysOverdue);
         reload();
     }
@@ -38,7 +38,7 @@ public class OverdueRentController extends AbstractController {
         UiTask.run(() -> ctx.payments().findOverdue(), rows -> {
             table.getItems().setAll(rows);
             BigDecimal total = rows.stream().map(OverdueRentRow::balance).reduce(BigDecimal.ZERO, BigDecimal::add);
-            totalLabel.setText(rows.size() + " overdue charge(s), total " + MoneyUtil.format(total));
+            totalLabel.setText(rows.size() + " overdue charge(s), total " + fmt.money(total));
         });
     }
 

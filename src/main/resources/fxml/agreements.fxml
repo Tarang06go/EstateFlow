@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.AgreementListController">
-  <Label styleClass="screen-title" text="Rental agreements"/>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.AgreementListController">
+  <VBox styleClass="page-header"><Label styleClass="page-title" text="Rental agreements"/><Label styleClass="page-subtitle" text="Create, review and end leases. Rent charges are generated automatically."/></VBox>
   <HBox spacing="8">
     <TextField fx:id="searchField" promptText="Search property, tenant or agreement no." prefWidth="300" onAction="#reload"/>
     <ComboBox fx:id="filterBox" prefWidth="140"/>
     <Button text="Search" onAction="#reload"/>
     <Button text="Clear" onAction="#onClear"/>
     <Region HBox.hgrow="ALWAYS"/>
-    <Button styleClass="button-primary" text="New agreement" onAction="#onAdd"/>
+    <Button styleClass="btn-primary" text="New agreement" onAction="#onAdd" userData="MANAGE_RECORDS"/>
     <Button text="Details / Terminate" onAction="#onDetails"/>
     <Button text="Rent ledger" onAction="#onLedger"/>
     </HBox>

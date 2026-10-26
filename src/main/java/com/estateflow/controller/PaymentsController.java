@@ -31,11 +31,11 @@ public class PaymentsController extends AbstractController {
         statusBox.setValue(ALL);
         table.setPlaceholder(new Label("No payments match these filters."));
         TableUtil.column(table, "Receipt", 130, PaymentReportRow::receiptNumber);
-        TableUtil.column(table, "Date", 105, r -> DateFormats.format(r.paymentDate()));
+        TableUtil.column(table, "Date", 105, r -> fmt.date(r.paymentDate()));
         TableUtil.column(table, "Tenant", 160, PaymentReportRow::tenantName);
         TableUtil.column(table, "Property", 170, PaymentReportRow::propertyName);
-        TableUtil.column(table, "Rent period", 105, r -> DateFormats.format(r.periodStart()));
-        TableUtil.column(table, "Amount", 105, r -> MoneyUtil.format(r.amount()));
+        TableUtil.column(table, "Rent period", 105, r -> fmt.date(r.periodStart()));
+        TableUtil.column(table, "Amount", 105, r -> fmt.money(r.amount()));
         TableUtil.column(table, "Method", 110, r -> r.method().getDisplayLabel());
         TableUtil.column(table, "Reference", 110, PaymentReportRow::referenceNo);
         TableUtil.column(table, "Status", 80, r -> r.voided() ? "VOID" : "Valid");
@@ -64,7 +64,7 @@ public class PaymentsController extends AbstractController {
             table.getItems().setAll(rows);
             BigDecimal valid = rows.stream().filter(r -> !r.voided()).map(PaymentReportRow::amount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            countLabel.setText(rows.size() + " payment(s) shown (newest first, max 500)  |  valid total " + MoneyUtil.format(valid));
+            countLabel.setText(rows.size() + " payment(s) shown (newest first, max 500)  |  valid total " + fmt.money(valid));
         });
     }
 

@@ -1,5 +1,7 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.ReportingDao;
 import com.estateflow.dto.RentReminderRow;
 
@@ -17,7 +19,11 @@ public class RentReminderService {
     private final Clock clock;
     private final int windowDays;
 
-    public RentReminderService(ReportingDao reportingDao, Clock clock, int windowDays) {
+    private final Authorizer auth;
+
+    public RentReminderService(ReportingDao reportingDao, Clock clock, int windowDays,
+            Authorizer auth) {
+        this.auth = auth;
         this.reportingDao = reportingDao;
         this.clock = clock;
         this.windowDays = windowDays;
@@ -25,6 +31,7 @@ public class RentReminderService {
 
     /** Overdue first (oldest due date first), then due today, then upcoming. */
     public List<RentReminderRow> reminders() {
+        auth.require(Permission.VIEW_DATA);
         return reportingDao.findRentReminders(LocalDate.now(clock), windowDays);
     }
 

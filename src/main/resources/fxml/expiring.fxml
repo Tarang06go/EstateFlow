@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.ExpiringLeasesController">
-  <Label styleClass="screen-title" text="Expiring leases"/>
-  <HBox spacing="8"><Label fx:id="hintLabel" styleClass="hint"/><Region HBox.hgrow="ALWAYS"/><Button text="Refresh" onAction="#reload"/></HBox>
-  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
-</VBox>
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F6F7F4;"
+            fx:controller="com.estateflow.controller.ExpiringLeasesController">
+  <VBox styleClass="page">
+    <VBox styleClass="page-header"><Label styleClass="page-title" text="Expiring leases"/><Label styleClass="page-subtitle" text="Leases that end soon (including those ended early) and ended leases that still need action. Renewed leases are not listed."/></VBox>
+    <HBox spacing="8" alignment="CENTER_LEFT"><Label text="Ending within"/><ComboBox fx:id="periodBox" prefWidth="130"/><Label fx:id="hintLabel" styleClass="hint"/><Region HBox.hgrow="ALWAYS"/><Button text="Refresh" onAction="#reload"/></HBox>
+    <VBox styleClass="card" spacing="6">
+      <HBox spacing="8" alignment="CENTER_LEFT"><VBox><Label styleClass="card-title" text="Leases ending soon"/><Label styleClass="card-subtitle" text="Soonest first. Open one to renew or extend it."/></VBox><Region HBox.hgrow="ALWAYS"/><Button text="Open agreement" onAction="#onOpenEnding"/></HBox>
+      <TableView fx:id="table" prefHeight="260"/>
+    </VBox>
+    <VBox styleClass="card" spacing="6">
+      <HBox spacing="8" alignment="CENTER_LEFT"><VBox><Label styleClass="card-title" text="Ended leases needing attention"/><Label styleClass="card-subtitle" text="Ended, not renewed, and rent is still owing or a deposit is still held."/></VBox><Region HBox.hgrow="ALWAYS"/><Button text="Open agreement" onAction="#onOpenAttention"/></HBox>
+      <TableView fx:id="attentionTable" prefHeight="260"/>
+    </VBox>
+  </VBox>
+</ScrollPane>

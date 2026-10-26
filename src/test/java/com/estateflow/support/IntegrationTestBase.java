@@ -32,5 +32,9 @@ public abstract class IntegrationTestBase {
     @BeforeEach
     void cleanDatabase() throws Exception {
         TestDatabase.truncateAll(ctx.databaseManager());
+        // Phase 1: services require a signed-in user. Existing workflow tests run as an administrator;
+        // AuthIntegrationTest clears this session to exercise the real login path.
+        ctx.session().login(new com.estateflow.model.AppUser(1L, "it-admin", com.estateflow.model.enums.Role.ADMIN, true,
+                java.time.LocalDateTime.of(2026, 1, 1, 0, 0), null));
     }
 }

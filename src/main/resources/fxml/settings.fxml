@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F6F7F4;"
+            fx:controller="com.estateflow.controller.SettingsController">
+  <VBox styleClass="page">
+    <VBox styleClass="page-header"><Label styleClass="page-title" text="Settings"/>
+      <Label styleClass="page-subtitle" text="Display preferences are saved on this computer. Business settings come from the configuration files."/></VBox>
+    <VBox styleClass="card" maxWidth="760" spacing="12">
+      <Label styleClass="card-title" text="Display"/>
+      <GridPane hgap="16" vgap="12">
+        <Label text="Currency symbol" styleClass="kv-key" GridPane.rowIndex="0"/><ComboBox fx:id="currencyBox" prefWidth="240" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Date format" styleClass="kv-key" GridPane.rowIndex="1"/><ComboBox fx:id="dateBox" prefWidth="240" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Dashboard period" styleClass="kv-key" GridPane.rowIndex="2"/><ComboBox fx:id="monthsBox" prefWidth="240" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Preview" styleClass="kv-key" GridPane.rowIndex="3"/><Label fx:id="previewLabel" styleClass="kv-value" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+      </GridPane>
+      <HBox spacing="8"><Button fx:id="saveButton" styleClass="btn-primary" text="Save settings" onAction="#onSave" userData="MANAGE_SETTINGS"/>
+        <Button text="Restore defaults" onAction="#onDefaults" userData="MANAGE_SETTINGS"/></HBox>
+      <Label fx:id="fileLabel" styleClass="caption"/>
+    </VBox>
+    <VBox styleClass="card" maxWidth="760" spacing="10">
+      <Label styleClass="card-title" text="System (read-only)"/>
+      <GridPane hgap="16" vgap="10">
+        <Label text="Database" styleClass="kv-key" GridPane.rowIndex="0"/><Label fx:id="databaseValue" styleClass="kv-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Lease expiry warning" styleClass="kv-key" GridPane.rowIndex="1"/><Label fx:id="warningValue" styleClass="kv-value" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Rent reminder window" styleClass="kv-key" GridPane.rowIndex="2"/><Label fx:id="reminderValue" styleClass="kv-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Audit trail" styleClass="kv-key" GridPane.rowIndex="3"/><Label fx:id="auditValue" styleClass="kv-value" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+      </GridPane>
+      <Label styleClass="caption" wrapText="true" text="Change lease.expiry.warning.days and rent.reminder.days in application.properties; database credentials live in db.properties (never in the program or source control)."/>
+    </VBox>
+    <VBox styleClass="card" maxWidth="760" spacing="10">
+      <Label styleClass="card-title" text="Generated in-app reminders"/>
+      <Label wrapText="true" styleClass="list-row-sub" text="These preferences filter reminders shown in Notifications. EstateFlow does not send email, SMS or push messages."/>
+      <CheckBox fx:id="rentRemindersBox" text="Unpaid rent" userData="MANAGE_SETTINGS"/>
+      <CheckBox fx:id="leaseRemindersBox" text="Leases ending within the configured warning period" userData="MANAGE_SETTINGS"/>
+      <CheckBox fx:id="workOrderRemindersBox" text="Overdue work orders" userData="MANAGE_SETTINGS"/>
+    </VBox>
+    <VBox styleClass="card" maxWidth="760" spacing="8">
+      <Label styleClass="card-title" text="How the numbers are calculated"/>
+      <Label wrapText="true" styleClass="list-row-sub" text="Rent collected: valid (not voided) payments dated in the period. Billed: live (not cancelled) rent charges due in the period."/>
+      <Label wrapText="true" styleClass="list-row-sub" text="Outstanding rent: live charges already due, minus valid payments. Future charges are not outstanding and cannot be paid in advance."/>
+      <Label wrapText="true" styleClass="list-row-sub" text="Overdue: a live charge past its due date with a balance. Occupancy: active properties with an agreement in force today divided by all active properties."/>
+      <Label wrapText="true" styleClass="list-row-sub" text="Maintenance cost: recorded cost of in-progress and resolved requests, by the month of resolution (or report date while in progress)."/>
+    </VBox>
+    <VBox styleClass="card" maxWidth="760" spacing="8">
+      <Label styleClass="card-title" text="Optional facial verification"/>
+      <Label wrapText="true" styleClass="list-row-sub" text="Face matching is an optional convenience feature for this Windows profile. YuNet/SFace process camera frames locally; only an encrypted feature template is stored in MySQL. Raw images are not saved. Photos or replayed video may fool matching; no liveness check is used. Administrators must use passwords."/>
+      <Label fx:id="facialVerificationValue" styleClass="caption" wrapText="true"/>
+      <Label fx:id="facialStatusLabel" styleClass="caption" wrapText="true"/>
+      <CheckBox fx:id="facialConsentBox" userData="MANAGE_OWN_FACE_PROFILE" wrapText="true" text="I consent to local face matching for sign-in on this Windows profile. I understand photos or replay may fool matching, that no liveness check is performed, and that another PC needs separate enrollment."/>
+      <Label text="Current EstateFlow password" styleClass="kv-key"/>
+      <PasswordField fx:id="facialPasswordField" promptText="Reauthenticate for enrollment or changes" userData="MANAGE_OWN_FACE_PROFILE"/>
+      <HBox spacing="8">
+        <Button fx:id="facialEnrollButton" text="Enroll and enable" onAction="#onFaceEnroll" userData="MANAGE_OWN_FACE_PROFILE" disable="true"/>
+        <Button fx:id="facialCancelButton" text="Cancel enrollment" onAction="#onFaceCancelEnrollment" userData="MANAGE_OWN_FACE_PROFILE"/>
+        <Button fx:id="facialEnableButton" text="Enable on this computer" onAction="#onFaceEnable" userData="MANAGE_OWN_FACE_PROFILE" disable="true"/>
+        <Button fx:id="facialDisableButton" text="Disable here" onAction="#onFaceDisable" userData="MANAGE_OWN_FACE_PROFILE" disable="true"/>
+        <Button fx:id="facialRevokeButton" text="Revoke and delete all" onAction="#onFaceRevoke" userData="MANAGE_OWN_FACE_PROFILE" disable="true"/>
+      </HBox>
+    </VBox>
+  </VBox>
+</ScrollPane>

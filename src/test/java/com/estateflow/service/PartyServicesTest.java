@@ -1,5 +1,6 @@
 package com.estateflow.service;
 
+import com.estateflow.support.TestAuth;
 import com.estateflow.dao.*;
 import com.estateflow.exception.*;
 import com.estateflow.model.*;
@@ -29,10 +30,10 @@ class PartyServicesTest {
 
     @BeforeEach
     void setUp() {
-        owners = new OwnerService(ownerDao, propertyDao, new PassThroughTransactionManager(), AuditService.noop());
-        tenants = new TenantService(tenantDao, agreementDao, new PassThroughTransactionManager(), AuditService.noop(), CLOCK);
+        owners = new OwnerService(ownerDao, propertyDao, reportingDao, new PassThroughTransactionManager(), AuditService.noop(), CLOCK, TestAuth.admin());
+        tenants = new TenantService(tenantDao, agreementDao, reportingDao, new PassThroughTransactionManager(), AuditService.noop(), CLOCK, TestAuth.admin());
         properties = new PropertyService(propertyDao, ownerDao, agreementDao, reportingDao,
-                new PassThroughTransactionManager(), AuditService.noop(), CLOCK);
+                new PassThroughTransactionManager(), AuditService.noop(), CLOCK, TestAuth.admin());
         when(ownerDao.insert(any(Owner.class))).thenAnswer(i -> {
             Owner o = i.getArgument(0);
             o.setId(1L);

@@ -1,5 +1,6 @@
 package com.estateflow.service;
 
+import com.estateflow.support.TestAuth;
 import com.estateflow.dao.*;
 import com.estateflow.dto.*;
 import com.estateflow.exception.ValidationException;
@@ -33,7 +34,7 @@ class V11ServicesTest {
     @Test
     @DisplayName("Global search: fewer than 2 characters is rejected before any query runs")
     void search_tooShort_throwsValidation() {
-        SearchService s = new SearchService(ownerDao, tenantDao, agreementDao, reportingDao, CLOCK);
+        SearchService s = new SearchService(ownerDao, tenantDao, agreementDao, reportingDao, CLOCK, TestAuth.admin());
         assertThrows(ValidationException.class, () -> s.search(" a "));
         assertThrows(ValidationException.class, () -> s.search(null));
         verifyNoMoreInteractions(ownerDao, tenantDao, agreementDao, reportingDao);
@@ -42,7 +43,7 @@ class V11ServicesTest {
     @Test
     @DisplayName("Global search: every entity type is queried with the same cap and today's date")
     void search_cappedQueriesPerType() throws Exception {
-        SearchService s = new SearchService(ownerDao, tenantDao, agreementDao, reportingDao, CLOCK);
+        SearchService s = new SearchService(ownerDao, tenantDao, agreementDao, reportingDao, CLOCK, TestAuth.admin());
         SearchResults results = s.search("  asha ");
         verify(ownerDao).search("asha", SearchService.PER_TYPE_LIMIT);
         verify(tenantDao).search("asha", SearchService.PER_TYPE_LIMIT);
@@ -55,11 +56,11 @@ class V11ServicesTest {
     @Test
     void agreementAndPaymentSearch_passFiltersAndValidateRange() throws Exception {
         AgreementService agreements = new AgreementService(agreementDao, mock(RentChargeDao.class), mock(PaymentDao.class),
-                propertyDao, tenantDao, new PassThroughTransactionManager(), AuditService.noop(), CLOCK, 30);
+                propertyDao, tenantDao, new PassThroughTransactionManager(), AuditService.noop(), CLOCK, 30, TestAuth.admin());
         agreements.searchRows("flat", AgreementFilter.EXPIRED);
         verify(agreementDao).searchRows("flat", AgreementFilter.EXPIRED, TODAY, 500);
         PaymentService payments = new PaymentService(mock(PaymentDao.class), mock(RentChargeDao.class), reportingDao,
-                new PassThroughTransactionManager(), AuditService.noop(), CLOCK);
+                new PassThroughTransactionManager(), AuditService.noop(), CLOCK, TestAuth.admin());
         payments.search("ravi", TODAY.minusDays(3), TODAY, Boolean.FALSE);
         verify(reportingDao).searchPaymentRows("ravi", TODAY.minusDays(3), TODAY, Boolean.FALSE, 500);
         assertThrows(ValidationException.class, () -> payments.search("", TODAY, TODAY.minusDays(1), null));
@@ -73,7 +74,7 @@ class V11ServicesTest {
                 .thenReturn(List.of(new MonthlyAmount(YearMonth.of(2026, 7), new BigDecimal("1500.00")),
                         new MonthlyAmount(YearMonth.of(2026, 10), new BigDecimal("200.00"))));
         when(reportingDao.monthlyMaintenanceCosts(any(), any())).thenReturn(List.of());
-        DashboardCharts charts = new DashboardService(reportingDao, CLOCK, 30).charts();
+        DashboardCharts charts = new DashboardService(reportingDao, CLOCK, 30, TestAuth.admin()).charts();
         assertEquals(6, charts.rentCollected().size());
         assertEquals(YearMonth.of(2026, 5), charts.rentCollected().get(0).month());
         assertEquals(YearMonth.of(2026, 10), charts.rentCollected().get(5).month());
@@ -95,7 +96,7 @@ class V11ServicesTest {
     @Test
     @DisplayName("Reminders: the configured window and today's date reach the query; categories follow the day count")
     void reminders_windowAndCategories() {
-        RentReminderService service = new RentReminderService(reportingDao, CLOCK, 7);
+        RentReminderService service = new RentReminderService(reportingDao, CLOCK, 7, TestAuth.admin());
         service.reminders();
         verify(reportingDao).findRentReminders(TODAY, 7);
         assertEquals(7, service.getWindowDays());
@@ -119,7 +120,7 @@ class V11ServicesTest {
                 List.of(new MonthlyAmount(YearMonth.of(2026, 9), new BigDecimal("700.00"))));
         when(reportingDao.maintenanceSummary(LocalDate.of(2026, 5, 1), LocalDate.of(2026, 10, 31))).thenReturn(raw);
         MaintenanceService service = new MaintenanceService(mock(MaintenanceDao.class), propertyDao, agreementDao, reportingDao,
-                new PassThroughTransactionManager(), AuditService.noop(), CLOCK);
+                new PassThroughTransactionManager(), AuditService.noop(), CLOCK, TestAuth.admin());
         MaintenanceSummary summary = service.summary();
         assertEquals(6, summary.costByMonth().size());
         assertEquals(new BigDecimal("1000.00"), summary.totalCost());
@@ -143,7 +144,7 @@ class V11ServicesTest {
                 maintRow(MaintenanceStatus.CANCELLED, "999.00"), maintRow(MaintenanceStatus.OPEN, null)));
         when(reportingDao.outstandingForProperty(5L, TODAY)).thenReturn(new BigDecimal("42.00"));
         PropertyService service = new PropertyService(propertyDao, ownerDao, agreementDao, reportingDao,
-                new PassThroughTransactionManager(), AuditService.noop(), CLOCK);
+                new PassThroughTransactionManager(), AuditService.noop(), CLOCK, TestAuth.admin());
         PropertyDetails d = service.details(5L);
         assertEquals(2L, d.currentAgreement().agreementId());
         assertEquals(2, d.agreements().size());
@@ -159,7 +160,7 @@ class V11ServicesTest {
         when(agreementDao.findRowsByProperty(5L)).thenReturn(List.of(
                 agreementRow(1, LocalDate.of(2027, 1, 1), LocalDate.of(2027, 12, 31))));
         PropertyService service = new PropertyService(propertyDao, ownerDao, agreementDao, reportingDao,
-                new PassThroughTransactionManager(), AuditService.noop(), CLOCK);
+                new PassThroughTransactionManager(), AuditService.noop(), CLOCK, TestAuth.admin());
         PropertyDetails d = service.details(5L);
         assertNull(d.currentAgreement());
         assertEquals("", d.ownerName());

@@ -54,6 +54,7 @@ public class TenantFormController extends AbstractDialogController {
             tenant.setEmergencyContactPhone(InputParser.optionalText(emergencyPhoneField.getText()));
             UiTask.run(() -> existing == null ? ctx.tenants().create(tenant) : ctx.tenants().update(tenant), saved -> {
                 close();
+                nav.toast("Tenant saved");
                 onSaved.run();
             }, saveButton);
         } catch (EstateFlowException e) {

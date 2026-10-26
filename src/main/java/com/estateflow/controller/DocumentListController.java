@@ -1,0 +1,14 @@
+package com.estateflow.controller;
+import com.estateflow.config.AppContext; import com.estateflow.model.DocumentRecord; import com.estateflow.util.*; import javafx.fxml.FXML; import javafx.scene.control.*; import javafx.stage.FileChooser; import java.awt.Desktop; import java.util.*;
+public final class DocumentListController extends AbstractController {
+ private record Loaded(boolean ready,List<DocumentRecord> rows) { }
+ @FXML private TextField query; @FXML private CheckBox archived; @FXML private TableView<DocumentRecord> table; @FXML private Label notice;
+ public DocumentListController(AppContext c,SceneNavigator n){super(c,n);}
+ @FXML private void initialize(){TableUtil.column(table,"Name",260,DocumentRecord::displayName);TableUtil.column(table,"Category",110,d->d.category().name());TableUtil.column(table,"Type",130,DocumentRecord::mediaType);TableUtil.column(table,"Size",90,d->String.format(java.util.Locale.ROOT,"%.1f KB",d.fileSize()/1024.0));TableUtil.column(table,"Uploaded",150,d->d.uploadedAt()==null?"":d.uploadedAt().toString().replace('T',' '));reload();}
+ @FXML private void reload(){String search=query.getText();boolean showArchived=archived.isSelected();UiTask.run(()->{if(!ctx.documents().isAvailable())return new Loaded(false,List.of());return new Loaded(true,ctx.documents().search(search,showArchived));},loaded->{table.getItems().setAll(loaded.rows());notice.setText(!loaded.ready()?"Documents require the manual database migration db/migrations/v1.6_documents_inspections.sql.":loaded.rows().isEmpty()?"No documents found. Stored files remain in your private EstateFlow document folder.":"");});}
+ @FXML private void onAdd(){nav.<DocumentFormController>showDialog("document-form.fxml","Add document",c->c.init(this::reload));}
+ @FXML private void onOpen(){DocumentRecord d=selected();if(d==null)return;UiTask.run(()->ctx.documents().open(d.id()),p->{try{if(Desktop.isDesktopSupported())Desktop.getDesktop().open(p.toFile());else AlertUtil.info("Documents","Document is stored at "+p);}catch(Exception e){AlertUtil.error("Documents","Could not open this document with the system viewer.");}});}
+ @FXML private void onArchive(){DocumentRecord d=selected();if(d!=null)UiTask.run(()->{ctx.documents().archive(d.id());return null;},x->{nav.toast("Document archived");reload();});}
+ @FXML private void onReplace(){DocumentRecord d=selected();if(d==null)return;FileChooser fc=new FileChooser();fc.setTitle("Choose replacement document");fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF, PNG, JPEG","*.pdf","*.png","*.jpg","*.jpeg"));var f=fc.showOpenDialog(table.getScene().getWindow());if(f!=null)UiTask.run(()->ctx.documents().replace(d.id(),f.toPath()),x->{nav.toast("Replacement saved");reload();});}
+ private DocumentRecord selected(){var d=table.getSelectionModel().getSelectedItem();if(d==null)AlertUtil.info("Documents","Select a document first.");return d;}
+}

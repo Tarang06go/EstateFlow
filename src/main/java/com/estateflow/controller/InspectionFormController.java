@@ -1,0 +1,10 @@
+package com.estateflow.controller;
+import com.estateflow.config.AppContext;import com.estateflow.exception.EstateFlowException;import com.estateflow.model.*;import com.estateflow.util.*;import javafx.fxml.FXML;import javafx.scene.control.*;import javafx.util.StringConverter;import java.time.LocalDate;import java.util.List;import java.util.function.Consumer;
+public final class InspectionFormController extends AbstractDialogController{
+ @FXML private ComboBox<Property> propertyBox;@FXML private ComboBox<InspectionType> typeBox;@FXML private ComboBox<InspectionCondition> conditionBox;@FXML private DatePicker datePicker;@FXML private TextField areaField;@FXML private TextArea summaryArea,observationArea,followUpArea;@FXML private Button saveButton;private Consumer<Void> saved=x->{};
+ public InspectionFormController(AppContext c,SceneNavigator n){super(c,n);}
+ @FXML private void initialize(){typeBox.getItems().setAll(InspectionType.values());typeBox.setValue(InspectionType.ROUTINE);conditionBox.getItems().setAll(InspectionCondition.values());conditionBox.setValue(InspectionCondition.GOOD);datePicker.setValue(LocalDate.now(ctx.clock()));propertyBox.setConverter(new StringConverter<>(){public String toString(Property p){return p==null?"":p.getName()+" — "+p.getCity();}public Property fromString(String s){return null;}});UiTask.run(()->ctx.properties().findAll(),rows->propertyBox.getItems().setAll(rows));}
+ void init(Runnable done){saved=x->done.run();}
+ @FXML private void onCancel(){close();}
+ @FXML private void onSave(){Property selected=propertyBox.getValue();Long propertyId=selected==null?null:selected.getPropertyId();LocalDate date=datePicker.getValue();InspectionType type=typeBox.getValue();String summary=InputParser.optionalText(summaryArea.getText());InspectionFinding f=new InspectionFinding(null,null,areaField.getText(),conditionBox.getValue(),observationArea.getText(),followUpArea.getText(),null);UiTask.run(()->ctx.inspections().create(propertyId,null,date,type,summary,List.of(f)),r->{close();saved.accept(null);},saveButton);}
+}

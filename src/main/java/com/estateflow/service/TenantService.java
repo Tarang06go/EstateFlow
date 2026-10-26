@@ -1,7 +1,11 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.AgreementDao;
+import com.estateflow.dao.ReportingDao;
 import com.estateflow.dao.TenantDao;
+import com.estateflow.dto.TenantDetails;
 import com.estateflow.dao.TransactionManager;
 import com.estateflow.exception.*;
 import com.estateflow.model.Tenant;
@@ -21,24 +25,44 @@ public class TenantService {
 
     private final TenantDao tenantDao;
     private final AgreementDao agreementDao;
+    private final ReportingDao reportingDao;
     private final TransactionManager tx;
     private final AuditService audit;
     private final Clock clock;
 
-    public TenantService(TenantDao tenantDao, AgreementDao agreementDao, TransactionManager tx, AuditService audit,
-                         Clock clock) {
+    private final Authorizer auth;
+
+    public TenantService(TenantDao tenantDao, AgreementDao agreementDao, ReportingDao reportingDao, TransactionManager tx,
+                         AuditService audit, Clock clock,
+            Authorizer auth) {
+        this.auth = auth;
         this.tenantDao = tenantDao;
         this.agreementDao = agreementDao;
+        this.reportingDao = reportingDao;
         this.tx = tx;
         this.audit = audit;
         this.clock = clock;
     }
 
+    /** Tenant profile: agreements, payments, maintenance history and the rent currently outstanding. */
+    public TenantDetails details(Long tenantId) throws EntityNotFoundException {
+        auth.require(Permission.VIEW_DATA);
+        Tenant tenant = get(tenantId);
+        return new TenantDetails(tenant, agreementDao.findRowsByTenant(tenantId),
+                reportingDao.findPaymentRowsForTenant(tenantId), reportingDao.findMaintenanceRowsForTenant(tenantId),
+                reportingDao.outstandingForTenant(tenantId, LocalDate.now(clock)));
+    }
+
     public Tenant create(Tenant tenant) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         prepare(tenant);
         ensureUnique(tenant);
         try {
-            Tenant saved = tenantDao.insert(tenant);
+            Tenant saved = tx.inTransaction(() -> {
+                Tenant inserted = tenantDao.insert(tenant);
+                audit.record("TENANT", inserted.getId(), "CREATED", null, AuditService.details("name", inserted.getFullName()));
+                return inserted;
+            });
             log.info("Tenant {} created", saved.getId());
             return saved;
         } catch (DuplicateKeyException e) {
@@ -47,12 +71,17 @@ public class TenantService {
     }
 
     public Tenant update(Tenant tenant) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         Tenant existing = get(tenant.getId());
         prepare(tenant);
         ensureUnique(tenant);
         tenant.setActive(existing.isActive());
         try {
-            requireUpdated(tenantDao.update(tenant));
+            tx.runInTransaction(() -> {
+                requireUpdated(tenantDao.update(tenant));
+                audit.record("TENANT", tenant.getId(), "UPDATED", AuditService.details("name", existing.getFullName()),
+                        AuditService.details("name", tenant.getFullName()));
+            });
         } catch (DuplicateKeyException e) {
             throw duplicate(tenant, e);
         }
@@ -62,6 +91,7 @@ public class TenantService {
 
     /** BR-03: a tenant with an open agreement (effective_end_date >= today) cannot be deactivated. */
     public void deactivate(Long tenantId) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         Tenant tenant = get(tenantId);
         if (!tenant.isActive()) {
             return;
@@ -79,6 +109,7 @@ public class TenantService {
     }
 
     public void reactivate(Long tenantId) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         Tenant tenant = get(tenantId);
         if (tenant.isActive()) {
             return;
@@ -92,6 +123,7 @@ public class TenantService {
     }
 
     public Tenant get(Long tenantId) throws EntityNotFoundException {
+        auth.require(Permission.VIEW_DATA);
         if (tenantId == null) {
             throw new EntityNotFoundException("Tenant not found.");
         }
@@ -100,10 +132,12 @@ public class TenantService {
     }
 
     public List<Tenant> findAll() {
+        auth.require(Permission.VIEW_DATA);
         return tenantDao.findAll();
     }
 
     public List<Tenant> search(String text) {
+        auth.require(Permission.VIEW_DATA);
         return text == null || text.isBlank() ? tenantDao.findAll() : tenantDao.search(text.trim());
     }
 

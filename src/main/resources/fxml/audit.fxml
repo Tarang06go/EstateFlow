@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.AuditController">
-  <Label styleClass="screen-title" text="Audit history"/>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.AuditController">
+  <VBox styleClass="page-header"><Label styleClass="page-title" text="Activity history"/><Label styleClass="page-subtitle" text="Who changed what and when (append-only audit trail)."/></VBox>
   <Label fx:id="statusLabel" styleClass="hint" wrapText="true"/>
   <HBox spacing="8" alignment="CENTER_LEFT"><Label text="Record type"/><ComboBox fx:id="typeBox" prefWidth="170"/>
     <Label text="Record no."/><TextField fx:id="idField" prefWidth="90" onAction="#reload"/>
-    <Button styleClass="button-primary" text="Show" onAction="#reload"/><Button text="Clear" onAction="#onClear"/></HBox>
+    <Label text="User"/><TextField fx:id="userField" prefWidth="130" promptText="username" onAction="#reload"/>
+    <Button styleClass="btn-primary" text="Show" onAction="#reload"/><Button text="Clear" onAction="#onClear"/></HBox>
   <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
 </VBox>

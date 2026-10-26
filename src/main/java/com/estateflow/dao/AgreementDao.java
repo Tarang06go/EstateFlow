@@ -33,4 +33,6 @@ public interface AgreementDao extends CrudDao<RentalAgreement, Long> {
                                       LocalDate today, int limit);
 
     List<AgreementListRow> findRowsByProperty(Long propertyId);
+
+    List<AgreementListRow> findRowsByTenant(Long tenantId);
 }

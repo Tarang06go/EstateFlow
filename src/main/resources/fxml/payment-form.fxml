@@ -9,6 +9,6 @@
   <Label text="Reference" GridPane.rowIndex="4"/><TextField fx:id="referenceField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
   <Label text="Notes" GridPane.rowIndex="5"/><TextField fx:id="notesField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
   <HBox spacing="8" GridPane.rowIndex="6" GridPane.columnIndex="1">
-    <Button fx:id="saveButton" styleClass="button-primary" text="Record" onAction="#onSave" defaultButton="true"/>
+    <Button fx:id="saveButton" styleClass="btn-primary" text="Record" onAction="#onSave" defaultButton="true"/>
     <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
 </GridPane>

@@ -35,7 +35,7 @@ public class MaintenanceAnalyticsController extends AbstractController {
         propertyTable.setPlaceholder(new Label("No maintenance cost recorded yet."));
         TableUtil.column(propertyTable, "Property", 220, PropertyCost::propertyName);
         TableUtil.column(propertyTable, "Requests with cost", 130, PropertyCost::requests);
-        TableUtil.column(propertyTable, "Total cost", 120, c -> MoneyUtil.format(c.cost()));
+        TableUtil.column(propertyTable, "Total cost", 120, c -> fmt.money(c.cost()));
         reload();
     }
 
@@ -47,9 +47,9 @@ public class MaintenanceAnalyticsController extends AbstractController {
     private void render(MaintenanceSummary s) {
         fill(statusBox, s.countByStatus());
         fill(priorityBox, s.openByPriority());
-        resolvedCost.setText(MoneyUtil.format(s.resolvedCost()));
-        inProgressCost.setText(MoneyUtil.format(s.inProgressCost()));
-        totalCost.setText(MoneyUtil.format(s.totalCost()));
+        resolvedCost.setText(fmt.money(s.resolvedCost()));
+        inProgressCost.setText(fmt.money(s.inProgressCost()));
+        totalCost.setText(fmt.money(s.totalCost()));
         averageDays.setText(s.averageResolutionDays() == null ? "n/a" : s.averageResolutionDays().toPlainString());
         propertyTable.getItems().setAll(s.costByProperty());
         boolean empty = MonthlyAmount.allZero(s.costByMonth());

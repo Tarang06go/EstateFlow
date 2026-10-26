@@ -75,6 +75,15 @@ public final class SimplePdf {
                 .append(num(w)).append(' ').append(num(h)).append(" re f\n");
     }
 
+    /** Filled polygon from top-left based coordinates. */
+    public void fillPolygon(float[] xs, float[] yTops, float[] rgb) {
+        StringBuilder sb = new StringBuilder(color(rgb, false));
+        for (int i = 0; i < xs.length; i++) {
+            sb.append(num(xs[i])).append(' ').append(num(pageHeight - yTops[i])).append(i == 0 ? " m " : " l ");
+        }
+        current.append(sb).append("h f\n");
+    }
+
     public void strokeRect(float x, float yTop, float w, float h, float lineWidth, float[] rgb) {
         current.append(color(rgb, true)).append(num(lineWidth)).append(" w ").append(num(x)).append(' ')
                 .append(num(pageHeight - yTop - h)).append(' ').append(num(w)).append(' ').append(num(h)).append(" re S\n");

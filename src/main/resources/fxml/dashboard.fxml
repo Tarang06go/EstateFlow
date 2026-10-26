@@ -1,51 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #f4f6f8;"
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F6F7F4;"
             fx:controller="com.estateflow.controller.DashboardController">
-  <VBox styleClass="screen">
-    <HBox spacing="12"><Label styleClass="screen-title" text="Dashboard"/><Region HBox.hgrow="ALWAYS"/>
-      <Button fx:id="refreshButton" text="Refresh" onAction="#refresh"/></HBox>
-    <FlowPane hgap="12" vgap="12">
-      <VBox styleClass="card"><Label fx:id="propertiesValue" styleClass="card-value"/><Label styleClass="card-label" text="Active properties"/></VBox>
-      <VBox styleClass="card"><Label fx:id="occupiedValue" styleClass="card-value"/><Label styleClass="card-label" text="Occupied"/></VBox>
-      <VBox styleClass="card"><Label fx:id="vacantValue" styleClass="card-value"/><Label styleClass="card-label" text="Vacant"/></VBox>
-      <VBox styleClass="card"><Label fx:id="occupancyValue" styleClass="card-value"/><Label styleClass="card-label" text="Occupancy"/></VBox>
-      <VBox styleClass="card"><Label fx:id="agreementsValue" styleClass="card-value"/><Label styleClass="card-label" text="Agreements in force today"/></VBox>
-      <VBox styleClass="card"><Label fx:id="endingValue" styleClass="card-value"/><Label fx:id="endingLabel" styleClass="card-label"/></VBox>
-      <VBox styleClass="card"><Label fx:id="collectedValue" styleClass="card-value"/><Label styleClass="card-label" text="Rent collected this month"/></VBox>
-      <VBox styleClass="card"><Label fx:id="outstandingValue" styleClass="card-value"/><Label styleClass="card-label" text="Outstanding balance"/></VBox>
-      <VBox styleClass="card"><Label fx:id="overdueValue" styleClass="card-value status-bad"/><Label styleClass="card-label" text="Overdue rent charges"/></VBox>
-    </FlowPane>
-    <FlowPane hgap="14" vgap="14">
-      <VBox styleClass="chart-card" prefWidth="520">
-        <Label styleClass="chart-title" text="Rent collected per month (last 6 months, valid payments)"/>
-        <StackPane>
-          <BarChart fx:id="collectionChart" legendVisible="false" animated="false" prefHeight="270" prefWidth="496">
-            <xAxis><CategoryAxis/></xAxis><yAxis><NumberAxis label="Rs."/></yAxis>
-          </BarChart>
-          <Label fx:id="collectionEmpty" styleClass="empty-state" text="No payments recorded in the last 6 months." visible="false"/>
-        </StackPane>
-      </VBox>
-      <VBox styleClass="chart-card" prefWidth="400">
-        <Label styleClass="chart-title" text="Occupancy of active properties"/>
-        <StackPane>
-          <PieChart fx:id="occupancyChart" legendVisible="true" animated="false" labelsVisible="true" prefHeight="270" prefWidth="376"/>
-          <Label fx:id="occupancyEmpty" styleClass="empty-state" text="No active properties yet." visible="false"/>
-        </StackPane>
-      </VBox>
-      <VBox styleClass="chart-card" prefWidth="520">
-        <Label styleClass="chart-title" text="Maintenance cost per month (in progress and resolved work)"/>
-        <StackPane>
-          <BarChart fx:id="maintenanceChart" legendVisible="false" animated="false" prefHeight="270" prefWidth="496">
-            <xAxis><CategoryAxis/></xAxis><yAxis><NumberAxis label="Rs."/></yAxis>
-          </BarChart>
-          <Label fx:id="maintenanceEmpty" styleClass="empty-state" text="No maintenance cost recorded in the last 6 months." visible="false"/>
-        </StackPane>
-      </VBox>
-    </FlowPane>
-    <Label styleClass="section-title" text="Open maintenance requests"/>
-    <FlowPane fx:id="maintenanceBox" hgap="12" vgap="12"/>
+  <VBox styleClass="page">
+    <HBox alignment="CENTER_LEFT" spacing="12">
+      <VBox styleClass="page-header"><Label styleClass="page-title" text="Dashboard"/><Label fx:id="subtitleLabel" styleClass="page-subtitle"/></VBox>
+      <Region HBox.hgrow="ALWAYS"/>
+      <Label styleClass="caption" text="Period"/><ComboBox fx:id="periodBox" prefWidth="150"/>
+      <Button fx:id="refreshButton" text="Refresh" onAction="#refresh"/>
+    </HBox>
+    <HBox fx:id="quickActions" spacing="8"/>
+    <HBox fx:id="kpiRow" spacing="14"/>
+    <VBox fx:id="portfolioStrip" styleClass="card"/>
+    <HBox spacing="14" alignment="TOP_LEFT">
+      <VBox fx:id="financeCard" styleClass="card" HBox.hgrow="ALWAYS" prefWidth="620"/>
+      <VBox fx:id="occupancyCard" styleClass="card" prefWidth="330" minWidth="300"/>
+    </HBox>
+    <Label styleClass="section-title" text="Action required"/>
+    <GridPane fx:id="actionGrid" hgap="14" vgap="14"/>
+    <HBox spacing="14" alignment="TOP_LEFT">
+      <VBox fx:id="activityCard" styleClass="card" HBox.hgrow="ALWAYS" prefWidth="400"/>
+      <VBox fx:id="maintenanceCard" styleClass="card" HBox.hgrow="ALWAYS" prefWidth="540"/>
+    </HBox>
   </VBox>
 </ScrollPane>

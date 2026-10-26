@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.NotificationsController">
+ <VBox styleClass="page-header"><Label styleClass="page-title" text="Notifications"/><Label styleClass="page-subtitle" text="Current rent, lease and maintenance reminders generated from saved records."/></VBox>
+ <HBox spacing="8" alignment="CENTER_LEFT"><Label fx:id="statusLabel" styleClass="hint"/><Region HBox.hgrow="ALWAYS"/><Button text="Open selected" onAction="#onOpen"/><Button styleClass="btn-primary" text="Refresh" onAction="#reload"/></HBox>
+ <Label styleClass="caption" wrapText="true" text="Generated reminders are refreshed from current data. EstateFlow does not send or claim delivery of email, SMS or push messages."/>
+ <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

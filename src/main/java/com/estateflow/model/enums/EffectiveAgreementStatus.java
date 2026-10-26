@@ -9,5 +9,7 @@ public enum EffectiveAgreementStatus {
     ACTIVE,
     EXPIRING_SOON,
     EXPIRED,
-    TERMINATED
+    TERMINATED,
+    /** Superseded by a renewal agreement (derived from the renewal link, never stored). */
+    RENEWED
 }

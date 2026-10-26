@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" prefWidth="760" fx:controller="com.estateflow.controller.DepositDetailController">
+  <Label fx:id="headerLabel" styleClass="card-title" wrapText="true"/>
+  <Label fx:id="summaryLabel" wrapText="true"/>
+  <Label fx:id="hintLabel" styleClass="hint" wrapText="true"/>
+  <TableView fx:id="table" prefHeight="230"/>
+  <HBox spacing="8">
+    <Button fx:id="collectButton" styleClass="btn-primary" text="Collect deposit" userData="RECORD_PAYMENTS" onAction="#onCollect"/>
+    <Button text="Deduct..." userData="RECORD_PAYMENTS" onAction="#onDeduct"/>
+    <Button text="Refund..." userData="RECORD_PAYMENTS" onAction="#onRefund"/>
+    <Button styleClass="btn-danger" text="Void selected entry" userData="RECORD_PAYMENTS" onAction="#onVoid"/>
+    <Region HBox.hgrow="ALWAYS"/><Button text="Close" onAction="#onClose" cancelButton="true"/>
+  </HBox>
+</VBox>

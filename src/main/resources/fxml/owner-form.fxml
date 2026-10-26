@@ -7,6 +7,6 @@
   <Label text="Email" GridPane.rowIndex="2"/><TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
   <Label text="Address" GridPane.rowIndex="3"/><TextField fx:id="addressField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
   <HBox spacing="8" GridPane.rowIndex="4" GridPane.columnIndex="1">
-    <Button fx:id="saveButton" styleClass="button-primary" text="Save" onAction="#onSave" defaultButton="true"/>
+    <Button fx:id="saveButton" styleClass="btn-primary" text="Save" onAction="#onSave" defaultButton="true"/>
     <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
 </GridPane>

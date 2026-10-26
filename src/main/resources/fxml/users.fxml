@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.UserListController">
+  <VBox styleClass="page-header"><Label styleClass="page-title" text="Users"/><Label styleClass="page-subtitle" text="Accounts that can sign in to EstateFlow. Only administrators see this screen."/></VBox>
+  <HBox spacing="8">
+    <Button text="Refresh" onAction="#reload"/><Region HBox.hgrow="ALWAYS"/>
+    <Button styleClass="btn-primary" text="Add user" onAction="#onAdd"/>
+    <Button text="Change role" onAction="#onChangeRole"/>
+    <Button text="Reset password" onAction="#onResetPassword"/>
+    <Button fx:id="toggleButton" text="Activate / Deactivate" onAction="#onToggleActive"/>
+  </HBox>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

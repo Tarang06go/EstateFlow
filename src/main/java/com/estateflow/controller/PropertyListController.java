@@ -23,7 +23,7 @@ public class PropertyListController extends AbstractController {
         TableUtil.column(table, "Owner", 160, PropertyOccupancyRow::ownerName);
         TableUtil.column(table, "Occupancy", 100, r -> r.occupied() ? "Occupied" : "Vacant");
         TableUtil.column(table, "Tenant today", 160, PropertyOccupancyRow::tenantName);
-        TableUtil.column(table, "Listed rent", 110, r -> MoneyUtil.format(r.listedRent()));
+        TableUtil.column(table, "Listed rent", 110, r -> fmt.money(r.listedRent()));
         TableUtil.column(table, "Status", 80, r -> r.active() ? "Active" : "Inactive");
         reload();
     }

@@ -1,5 +1,7 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.PaymentDao;
 import com.estateflow.dao.ReportingDao;
 import com.estateflow.dto.PaymentReceiptData;
@@ -27,11 +29,16 @@ public class ReceiptService {
     private final PdfReceiptWriter pdfReceiptWriter = new PdfReceiptWriter();
     private final Clock clock;
 
-    public ReceiptService(PaymentDao paymentDao, ReportingDao reportingDao, ReceiptWriter receiptWriter) {
-        this(paymentDao, reportingDao, receiptWriter, Clock.systemDefaultZone());
+    private final Authorizer auth;
+
+    public ReceiptService(PaymentDao paymentDao, ReportingDao reportingDao, ReceiptWriter receiptWriter,
+                          Authorizer auth) {
+        this(paymentDao, reportingDao, receiptWriter, Clock.systemDefaultZone(), auth);
     }
 
-    public ReceiptService(PaymentDao paymentDao, ReportingDao reportingDao, ReceiptWriter receiptWriter, Clock clock) {
+    public ReceiptService(PaymentDao paymentDao, ReportingDao reportingDao, ReceiptWriter receiptWriter, Clock clock,
+                          Authorizer auth) {
+        this.auth = auth;
         this.paymentDao = paymentDao;
         this.reportingDao = reportingDao;
         this.receiptWriter = receiptWriter;
@@ -39,6 +46,7 @@ public class ReceiptService {
     }
 
     public PaymentReceiptData buildReceipt(Long paymentId) throws EstateFlowException {
+        auth.require(Permission.VIEW_DATA);
         if (paymentId == null) {
             throw new ValidationException("Select a payment.", "payment");
         }
@@ -57,6 +65,7 @@ public class ReceiptService {
 
     /** Writes a PDF when the file name ends with .pdf, otherwise the plain-text receipt. */
     public void writeReceipt(Long paymentId, Path target) throws EstateFlowException {
+        auth.require(Permission.VIEW_DATA);
         PaymentReceiptData data = buildReceipt(paymentId);
         if (target.getFileName().toString().toLowerCase().endsWith(".pdf")) {
             LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());

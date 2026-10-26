@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F6F7F4;"
+            fx:controller="com.estateflow.controller.DepositsController">
+  <VBox styleClass="page">
+    <VBox styleClass="page-header"><Label styleClass="page-title" text="Security deposits"/><Label styleClass="page-subtitle" text="Deposits are money held for tenants (a liability). They are never counted as rent income or in NOI."/></VBox>
+    <HBox spacing="8" alignment="CENTER_LEFT">
+      <ComboBox fx:id="propertyBox" prefWidth="190" promptText="All properties"/>
+      <ComboBox fx:id="tenantBox" prefWidth="190" promptText="All tenants"/>
+      <Label text="Activity from"/><DatePicker fx:id="fromPicker" prefWidth="130"/>
+      <Label text="to"/><DatePicker fx:id="toPicker" prefWidth="130"/>
+      <Label text="View by"/><ComboBox fx:id="viewBox" prefWidth="120"/>
+      <Button fx:id="refreshButton" styleClass="btn-primary" text="Refresh" onAction="#refresh"/>
+    </HBox>
+    <HBox fx:id="kpiRow" spacing="12"/>
+    <VBox styleClass="card" spacing="6">
+      <HBox spacing="8" alignment="CENTER_LEFT"><VBox><Label styleClass="card-title" text="Deposits held"/><Label fx:id="heldHint" styleClass="card-subtitle"/></VBox><Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="openButton" text="Open deposit" onAction="#onOpen"/></HBox>
+      <TableView fx:id="rowTable" prefHeight="300"/>
+      <TableView fx:id="groupTable" prefHeight="300" visible="false" managed="false"/>
+    </VBox>
+    <VBox styleClass="card" spacing="6">
+      <Label styleClass="card-title" text="Collections, deductions and refunds in the period"/>
+      <Label styleClass="card-subtitle" text="Voided entries and renewal carry-overs are not shown."/>
+      <TableView fx:id="activityTable" prefHeight="260"/>
+    </VBox>
+  </VBox>
+</ScrollPane>

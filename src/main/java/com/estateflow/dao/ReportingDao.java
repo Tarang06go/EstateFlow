@@ -48,4 +48,31 @@ public interface ReportingDao {
     List<RentReminderRow> findRentReminders(LocalDate today, int windowDays);
 
     MaintenanceSummary maintenanceSummary(LocalDate monthsFrom, LocalDate monthsTo);
+
+    // ---- v1.2 additions
+
+    /** Expected rent per month: live rent charges by due-date month. Months without charges are absent. */
+    List<MonthlyAmount> monthlyExpectedRent(LocalDate from, LocalDate to);
+
+    List<PropertyOccupancyRow> findPropertyRowsForOwner(Long ownerId, LocalDate today);
+
+    /** Active properties with no agreement in force today, by name. */
+    List<PropertyOccupancyRow> findVacantPropertyRows(LocalDate today, int limit);
+
+    /** OPEN and IN_PROGRESS requests, most urgent first, then oldest first. */
+    List<MaintenanceReportRow> findOpenMaintenanceRows(int limit);
+
+    List<PaymentReportRow> findPaymentRowsForTenant(Long tenantId);
+
+    List<MaintenanceReportRow> findMaintenanceRowsForTenant(Long tenantId);
+
+    java.math.BigDecimal outstandingForTenant(Long tenantId, LocalDate today);
+
+    java.math.BigDecimal outstandingForOwner(Long ownerId, LocalDate today);
+
+    /** Billed rent due in the range and the share already paid against those same charges as of now. */
+    AdvancedAnalyticsReport.CollectionMetrics collectionMetrics(LocalDate from, LocalDate to);
+
+    /** Current unpaid balances grouped by days overdue. */
+    List<AdvancedAnalyticsReport.ArrearsBucket> arrearsAging(LocalDate today);
 }

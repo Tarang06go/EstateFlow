@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.estateflow.controller.AssistantWidgetController"
+            fx:id="dock" styleClass="assistant-dock" pickOnBounds="false"
+            maxWidth="Infinity" maxHeight="Infinity">
+  <VBox fx:id="dockContent" alignment="BOTTOM_RIGHT" spacing="12" pickOnBounds="false"
+        maxWidth="Infinity" maxHeight="Infinity"
+        style="-fx-padding: 0;" AnchorPane.rightAnchor="24" AnchorPane.bottomAnchor="24">
+    <VBox fx:id="chatPanel" styleClass="assistant-panel" spacing="0" visible="false" managed="false"
+          maxWidth="380" maxHeight="520" minHeight="0" accessibleText="EstateFlow property assistant chat">
+      <HBox styleClass="assistant-header" alignment="CENTER_LEFT" spacing="10">
+        <StackPane styleClass="assistant-avatar" minWidth="38" prefWidth="38" minHeight="38" prefHeight="38">
+          <Circle radius="18" styleClass="assistant-avatar-ring"/>
+          <Label text="EF" styleClass="assistant-avatar-mark"/>
+        </StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+          <Label text="EstateFlow assistant" styleClass="assistant-title"/>
+          <Label text="Private · uses your authorized records" styleClass="assistant-caption"/>
+        </VBox>
+        <Button fx:id="fullPageButton" text="Open" styleClass="assistant-header-action"
+                accessibleText="Open the full property assistant page" onAction="#onOpenFullAssistant"/>
+        <Button fx:id="closeButton" text="×" styleClass="assistant-close" accessibleText="Minimize assistant chat"
+                onAction="#onToggle"/>
+      </HBox>
+      <ScrollPane fx:id="historyScroll" styleClass="assistant-history-scroll" fitToWidth="true"
+                  hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS" minHeight="0">
+        <VBox fx:id="history" styleClass="assistant-history" spacing="10" fillWidth="true"/>
+      </ScrollPane>
+      <VBox styleClass="assistant-compose" spacing="8">
+        <Label text="Try a question" styleClass="assistant-section-label"/>
+        <FlowPane fx:id="quickActions" hgap="6" vgap="6" styleClass="assistant-quick-actions"/>
+        <HBox spacing="8" alignment="CENTER">
+          <TextField fx:id="questionField" promptText="Ask about your portfolio…" accessibleText="Ask the property assistant"
+                     onAction="#onSend" HBox.hgrow="ALWAYS"/>
+          <Button fx:id="sendButton" text="Send" styleClass="btn-primary" onAction="#onSend" accessibleText="Send question"/>
+        </HBox>
+        <Label fx:id="statusLabel" styleClass="assistant-status" wrapText="true"/>
+        <Label text="Local summaries · No external AI service" styleClass="assistant-disclaimer" wrapText="true"/>
+      </VBox>
+    </VBox>
+    <StackPane fx:id="launcherWrap" styleClass="assistant-launcher-wrap" pickOnBounds="false">
+      <Button fx:id="launcherButton" styleClass="assistant-launcher" accessibleText="Open EstateFlow property assistant"
+              onAction="#onToggle" focusTraversable="true"/>
+      <Circle fx:id="notificationDot" radius="5" styleClass="assistant-notification" visible="false" managed="false"
+              mouseTransparent="true" accessibleText="A reply is ready" StackPane.alignment="TOP_RIGHT" translateX="-7" translateY="7"/>
+    </StackPane>
+  </VBox>
+</AnchorPane>

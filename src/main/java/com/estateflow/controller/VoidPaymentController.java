@@ -23,8 +23,8 @@ public class VoidPaymentController extends AbstractDialogController {
     void init(Payment payment, Runnable onVoided) {
         this.payment = payment;
         this.onVoided = onVoided;
-        infoLabel.setText("Payment " + payment.receiptNumber() + " of " + MoneyUtil.format(payment.getAmount())
-                + " dated " + DateFormats.format(payment.getPaymentDate()));
+        infoLabel.setText("Payment " + payment.receiptNumber() + " of " + fmt.money(payment.getAmount())
+                + " dated " + fmt.date(payment.getPaymentDate()));
     }
 
     @FXML
@@ -32,6 +32,7 @@ public class VoidPaymentController extends AbstractDialogController {
         String reason = reasonArea.getText();
         UiTask.runVoid(() -> ctx.payments().voidPayment(payment.getPaymentId(), reason), () -> {
             close();
+            nav.toast("Payment voided");
             onVoided.run();
         }, voidButton);
     }

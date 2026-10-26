@@ -22,4 +22,5 @@ public abstract class AbstractDialogController extends AbstractController implem
             stage.close();
         }
     }
+
 }

@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" prefWidth="520" fx:controller="com.estateflow.controller.AgreementDetailController">
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" prefWidth="520" fx:controller="com.estateflow.controller.AgreementDetailController">
   <Label fx:id="summaryLabel" wrapText="true"/>
-  <Label text="Notes (the only editable term, BR-16)"/>
+  <Label fx:id="renewalLabel" styleClass="hint" wrapText="true"/>
+  <Label fx:id="depositSummaryLabel" wrapText="true"/>
+  <HBox spacing="8">
+    <Button fx:id="extendButton" text="Extend lease..." userData="MANAGE_RECORDS" onAction="#onExtend"/>
+    <Button fx:id="renewButton" text="Renew lease..." userData="MANAGE_RECORDS" onAction="#onRenew"/>
+    <Button text="Security deposit..." onAction="#onDeposit"/></HBox>
+  <Label text="Lease history"/>
+  <ListView fx:id="historyList" prefHeight="80"/>
+  <Separator/>
+  <Label text="Notes (other lease terms change only through Extend or Renew)"/>
   <TextArea fx:id="notesArea" prefRowCount="3"/>
-  <Button fx:id="notesButton" text="Save notes" onAction="#onSaveNotes"/>
+  <Button fx:id="notesButton" text="Save notes" onAction="#onSaveNotes" userData="MANAGE_RECORDS"/>
   <Separator/>
   <Label text="Terminate agreement"/>
   <HBox spacing="8"><DatePicker fx:id="terminationPicker"/>
-    <Button fx:id="terminateButton" styleClass="button-danger" text="Terminate" onAction="#onTerminate"/></HBox>
+    <Button fx:id="terminateButton" styleClass="btn-danger" text="Terminate" onAction="#onTerminate" userData="MANAGE_RECORDS"/></HBox>
   <Label styleClass="hint" wrapText="true" text="Rent periods starting after the termination date are cancelled. Termination is refused while valid payments exist for those periods."/>
   <HBox spacing="8"><Button text="Open rent ledger" onAction="#onLedger"/><Button text="Close" onAction="#onClose"/></HBox>
 </VBox>

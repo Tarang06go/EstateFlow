@@ -1,7 +1,11 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.ReportingDao;
+import com.estateflow.dao.AgreementDao;
 import com.estateflow.dto.*;
+import com.estateflow.model.enums.AgreementFilter;
 import com.estateflow.exception.ReportExportException;
 import com.estateflow.exception.ValidationException;
 import com.estateflow.model.enums.MaintenanceStatus;
@@ -29,25 +33,63 @@ public class ReportService {
     private final CsvWriter csvWriter;
     private final Clock clock;
     private final int reminderDays;
+    private final AgreementDao agreementDao;
+    private final int warningDays;
 
-    public ReportService(ReportingDao reportingDao, CsvWriter csvWriter, Clock clock) {
-        this(reportingDao, csvWriter, clock, 7);
+    private final Authorizer auth;
+
+    public ReportService(ReportingDao reportingDao, CsvWriter csvWriter, Clock clock, Authorizer auth) {
+        this(reportingDao, csvWriter, clock, 7, auth);
     }
 
-    public ReportService(ReportingDao reportingDao, CsvWriter csvWriter, Clock clock, int reminderDays) {
+    public ReportService(ReportingDao reportingDao, CsvWriter csvWriter, Clock clock, int reminderDays,
+                         Authorizer auth) {
+        this(reportingDao, csvWriter, clock, reminderDays, null, 30, auth);
+    }
+
+    public ReportService(ReportingDao reportingDao, CsvWriter csvWriter, Clock clock, int reminderDays,
+                         AgreementDao agreementDao, int warningDays, Authorizer auth) {
+        this.auth = auth;
         this.reportingDao = reportingDao;
         this.csvWriter = csvWriter;
         this.clock = clock;
         this.reminderDays = reminderDays;
+        this.agreementDao = agreementDao;
+        this.warningDays = warningDays;
+    }
+
+    /** Rental agreements filtered by status (same date logic as the Agreements screen); capped at 10,000 rows. */
+    public int exportAgreements(AgreementFilter filter, Path target, ReportFormat format) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
+        LocalDate today = LocalDate.now(clock);
+        List<AgreementListRow> rows = agreementDao.searchRows("", filter == null ? AgreementFilter.ALL : filter, today, 10_000);
+        BigDecimal rent = rows.stream().map(AgreementListRow::monthlyRent).reduce(BigDecimal.ZERO, BigDecimal::add);
+        write(format, target, "Rental agreements", "Status: " + (filter == null ? AgreementFilter.ALL : filter).getDisplayLabel()
+                        + " | as of " + DateFormats.format(today),
+                List.of(rows.size() + " agreement(s)   Combined monthly rent: Rs. " + MoneyUtil.format(rent)),
+                new AgreementsReport(), rows);
+        return rows.size();
+    }
+
+    /** Agreements whose effective period ends within the configured warning window. */
+    public int exportExpiringLeases(Path target, ReportFormat format) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
+        LocalDate today = LocalDate.now(clock);
+        List<ExpiringLeaseRow> rows = agreementDao.findEndingBetween(today, today.plusDays(warningDays));
+        write(format, target, "Expiring leases", "Ending within " + warningDays + " days of " + DateFormats.format(today),
+                List.of(rows.size() + " agreement(s) ending soon"), new ExpiringLeasesReport(), rows);
+        return rows.size();
     }
 
     /** @return number of data rows written */
     public int exportPayments(LocalDate from, LocalDate to, Path target) throws ReportExportException, ValidationException {
+        auth.require(Permission.VIEW_REPORTS);
         return exportPayments(from, to, target, ReportFormat.CSV);
     }
 
     public int exportPayments(LocalDate from, LocalDate to, Path target, ReportFormat format)
             throws ReportExportException, ValidationException {
+        auth.require(Permission.VIEW_REPORTS);
         if (from == null || to == null || to.isBefore(from)) {
             throw new ValidationException("Choose a valid date range.", "dateRange");
         }
@@ -61,10 +103,12 @@ public class ReportService {
     }
 
     public int exportOverdue(Path target) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
         return exportOverdue(target, ReportFormat.CSV);
     }
 
     public int exportOverdue(Path target, ReportFormat format) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
         LocalDate today = LocalDate.now(clock);
         List<OverdueRentRow> rows = reportingDao.findOverdueRows(today);
         BigDecimal total = rows.stream().map(OverdueRentRow::balance).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -75,10 +119,12 @@ public class ReportService {
     }
 
     public int exportOccupancy(Path target) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
         return exportOccupancy(target, ReportFormat.CSV);
     }
 
     public int exportOccupancy(Path target, ReportFormat format) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
         LocalDate today = LocalDate.now(clock);
         List<PropertyOccupancyRow> rows = reportingDao.findOccupancyRows(today);
         long active = rows.stream().filter(PropertyOccupancyRow::active).count();
@@ -89,10 +135,12 @@ public class ReportService {
     }
 
     public int exportMaintenance(MaintenanceStatus statusOrNull, Path target) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
         return exportMaintenance(statusOrNull, target, ReportFormat.CSV);
     }
 
     public int exportMaintenance(MaintenanceStatus statusOrNull, Path target, ReportFormat format) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
         List<MaintenanceReportRow> rows = reportingDao.findMaintenanceRows(statusOrNull);
         BigDecimal cost = rows.stream().filter(r -> r.cost() != null).map(MaintenanceReportRow::cost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -102,6 +150,7 @@ public class ReportService {
     }
 
     public int exportRentReminders(Path target, ReportFormat format) throws ReportExportException {
+        auth.require(Permission.VIEW_REPORTS);
         LocalDate today = LocalDate.now(clock);
         List<RentReminderRow> rows = reportingDao.findRentReminders(today, reminderDays);
         long overdue = rows.stream().filter(r -> r.category() == RentReminderRow.Category.OVERDUE).count();

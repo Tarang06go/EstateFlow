@@ -3,30 +3,30 @@
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.estateflow.controller.MainController">
   <left>
-    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #1f2d3d; -fx-background: #1f2d3d;">
-      <VBox styleClass="sidebar">
-        <Label styleClass="sidebar-title" text="EstateFlow"/>
-        <Label styleClass="sidebar-subtitle" text="Property &amp; rental management"/>
-        <TextField fx:id="globalSearch" styleClass="sidebar-search" promptText="Search everything..." onAction="#onGlobalSearch"/>
-        <Label styleClass="sidebar-section" text="OVERVIEW"/>
-        <Button styleClass="nav-button" text="Dashboard" onAction="#showDashboard"/>
-        <Button styleClass="nav-button" text="Rent Reminders" onAction="#showReminders"/>
-        <Label styleClass="sidebar-section" text="PEOPLE &amp; PROPERTY"/>
-        <Button styleClass="nav-button" text="Owners" onAction="#showOwners"/>
-        <Button styleClass="nav-button" text="Tenants" onAction="#showTenants"/>
-        <Button styleClass="nav-button" text="Properties" onAction="#showProperties"/>
-        <Label styleClass="sidebar-section" text="RENT"/>
-        <Button styleClass="nav-button" text="Agreements" onAction="#showAgreements"/>
-        <Button styleClass="nav-button" text="Rent &amp; Payments" onAction="#showLedger"/>
-        <Button styleClass="nav-button" text="Payments" onAction="#showPayments"/>
-        <Button styleClass="nav-button" text="Overdue Rent" onAction="#showOverdue"/>
-        <Button styleClass="nav-button" text="Expiring Leases" onAction="#showExpiring"/>
-        <Label styleClass="sidebar-section" text="OPERATIONS"/>
-        <Button styleClass="nav-button" text="Maintenance" onAction="#showMaintenance"/>
-        <Button styleClass="nav-button" text="Reports" onAction="#showReports"/>
-        <Button styleClass="nav-button" text="Audit History" onAction="#showAudit"/>
+    <VBox styleClass="sidebar">
+      <StackPane fx:id="brandHolder" styleClass="sidebar-brand" alignment="CENTER_LEFT"/>
+      <VBox style="-fx-padding: 0 14 6 14;"><TextField fx:id="globalSearch" styleClass="sidebar-search" promptText="Search everything..." onAction="#onGlobalSearch"/></VBox>
+      <ScrollPane styleClass="sidebar-scroll" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+        <VBox fx:id="navBox" style="-fx-padding: 0 14 8 14;"/>
+      </ScrollPane>
+      <VBox styleClass="sidebar-user" spacing="2">
+        <Label fx:id="userLabel" styleClass="sidebar-user-name"/>
+        <Label fx:id="roleLabel" styleClass="sidebar-user-role"/>
+        <Button fx:id="logoutButton" styleClass="sidebar-logout" text="Sign out" maxWidth="Infinity" onAction="#onLogout"/>
       </VBox>
-    </ScrollPane>
+      <Label fx:id="versionLabel" styleClass="sidebar-footer"/>
+    </VBox>
   </left>
-  <center><StackPane fx:id="content"/></center>
+  <center>
+    <VBox minHeight="0">
+      <ProgressBar fx:id="busyBar" styleClass="busy-bar" maxWidth="Infinity" progress="-1" visible="false"/>
+      <StackPane VBox.vgrow="ALWAYS" minHeight="0">
+        <ScrollPane fx:id="contentScroll" styleClass="main-content-scroll" minHeight="0"
+                    fitToWidth="true" fitToHeight="false"
+                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"/>
+        <StackPane fx:id="assistantLayer" alignment="BOTTOM_RIGHT" pickOnBounds="false"/>
+        <VBox fx:id="toastBox" alignment="BOTTOM_RIGHT" spacing="8" pickOnBounds="false" mouseTransparent="true" style="-fx-padding: 0 24 24 0;"/>
+      </StackPane>
+    </VBox>
+  </center>
 </BorderPane>

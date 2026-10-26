@@ -12,15 +12,17 @@ public final class ErrorHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);
 
-    static final String DATABASE_MESSAGE = "The database operation failed. Check that MySQL is running. "
-            + "Details were written to the log.";
+    static final String DATABASE_MESSAGE = "The database operation failed. Diagnostic details were written to "
+            + "the EstateFlow log.";
     static final String UNEXPECTED_MESSAGE = "Unexpected error. Details were written to the log.";
 
     private ErrorHandler() {
     }
 
     public static void handle(Throwable t) {
-        if (t instanceof ValidationException e) {
+        if (t instanceof com.estateflow.exception.AuthorizationException e) {
+            AlertUtil.warning("Not permitted", e.getMessage());
+        } else if (t instanceof ValidationException e) {
             AlertUtil.warning("Please check the form", e.getMessage());
         } else if (t instanceof BusinessRuleException e) {
             AlertUtil.warning("Not allowed", e.getMessage());
@@ -36,7 +38,12 @@ public final class ErrorHandler {
             AlertUtil.error("Configuration error", e.getMessage());
         } else if (t instanceof DataAccessException e) {
             log.error("Database operation failed", e);
-            AlertUtil.error("Database error", DATABASE_MESSAGE);
+            // DataAccessException messages contain only the operation name, SQLState, and vendor
+            // code. Show those safe diagnostics; keep the original exception and stack trace in log.
+            AlertUtil.error("Database error", DATABASE_MESSAGE + "\n" + e.getMessage());
+        } else if (t instanceof com.estateflow.service.FaceEnrollmentException e) {
+            log.error("Face enrollment failed [diagnosticId={}, stage={}]", e.diagnosticId(), e.stage(), e);
+            AlertUtil.error("Enrollment not completed", e.userMessage() + "\nReference: " + e.diagnosticId());
         } else {
             log.error("Unexpected error", t);
             AlertUtil.error("Unexpected error", UNEXPECTED_MESSAGE);

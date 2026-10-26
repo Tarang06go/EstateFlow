@@ -65,6 +65,11 @@ public class RentalAgreement {
      */
     public EffectiveAgreementStatus effectiveStatus(LocalDate today, int warningDays) {
         Objects.requireNonNull(today, "today is required");
+        // A lease that has been renewed is shown as RENEWED (not as expiring or expired) once it has started;
+        // an early termination still wins.
+        if (renewedByAgreementId != null && status != AgreementStatus.TERMINATED && !today.isBefore(startDate)) {
+            return EffectiveAgreementStatus.RENEWED;
+        }
         if (today.isBefore(startDate)) {
             return EffectiveAgreementStatus.UPCOMING;
         }
@@ -81,6 +86,16 @@ public class RentalAgreement {
         }
         return EffectiveAgreementStatus.ACTIVE;
     }
+
+    /** The agreement this one renewed, or null (first lease). Loaded from the renewal link; never set by hand. */
+    private Long renewedFromAgreementId;
+    /** The agreement that renewed this one, or null. */
+    private Long renewedByAgreementId;
+
+    public Long getRenewedFromAgreementId() { return renewedFromAgreementId; }
+    public void setRenewedFromAgreementId(Long id) { this.renewedFromAgreementId = id; }
+    public Long getRenewedByAgreementId() { return renewedByAgreementId; }
+    public void setRenewedByAgreementId(Long id) { this.renewedByAgreementId = id; }
 
     // --- Getters and setters ---
 

@@ -1,5 +1,7 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.AgreementDao;
 import com.estateflow.dao.OwnerDao;
 import com.estateflow.dao.PropertyDao;
@@ -38,8 +40,12 @@ public class PropertyService {
     private final AuditService audit;
     private final Clock clock;
 
+    private final Authorizer auth;
+
     public PropertyService(PropertyDao propertyDao, OwnerDao ownerDao, AgreementDao agreementDao,
-                           ReportingDao reportingDao, TransactionManager tx, AuditService audit, Clock clock) {
+                           ReportingDao reportingDao, TransactionManager tx, AuditService audit, Clock clock,
+            Authorizer auth) {
+        this.auth = auth;
         this.propertyDao = propertyDao;
         this.ownerDao = ownerDao;
         this.agreementDao = agreementDao;
@@ -51,29 +57,40 @@ public class PropertyService {
 
     /** BR-05: only active owners can receive new properties. */
     public Property create(Property property) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         validate(property);
         requireActiveOwner(property.getOwnerId());
-        Property saved = propertyDao.insert(property);
+        Property saved = tx.inTransaction(() -> {
+            Property inserted = propertyDao.insert(property);
+            audit.record("PROPERTY", inserted.getPropertyId(), "CREATED", null,
+                    AuditService.details("name", inserted.getName(), "city", inserted.getCity(), "ownerId", inserted.getOwnerId()));
+            return inserted;
+        });
         log.info("Property {} created for owner {}", saved.getPropertyId(), saved.getOwnerId());
         return saved;
     }
 
     public Property update(Property property) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         Property existing = get(property.getPropertyId());
         validate(property);
         if (!existing.getOwnerId().equals(property.getOwnerId())) {
             requireActiveOwner(property.getOwnerId());
         }
         property.setActive(existing.isActive());
-        if (propertyDao.update(property) == 0) {
-            throw new EntityNotFoundException("The property record no longer exists or was changed. Refresh and try again.");
-        }
+        tx.runInTransaction(() -> {
+            save(property);
+            audit.record("PROPERTY", property.getPropertyId(), "UPDATED",
+                    AuditService.details("name", existing.getName(), "listedRent", existing.getListedRent()),
+                    AuditService.details("name", property.getName(), "listedRent", property.getListedRent()));
+        });
         log.info("Property {} updated", property.getPropertyId());
         return property;
     }
 
     /** BR-04: a property with an open agreement cannot be deactivated. */
     public void deactivate(Long propertyId) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         Property property = get(propertyId);
         if (!property.isActive()) {
             return;
@@ -92,6 +109,7 @@ public class PropertyService {
 
     /** BR-04: reactivation requires an active owner. */
     public void reactivate(Long propertyId) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         Property property = get(propertyId);
         if (property.isActive()) {
             return;
@@ -111,6 +129,7 @@ public class PropertyService {
     }
 
     public Property get(Long propertyId) throws EntityNotFoundException {
+        auth.require(Permission.VIEW_DATA);
         if (propertyId == null) {
             throw new EntityNotFoundException("Property not found.");
         }
@@ -119,16 +138,19 @@ public class PropertyService {
     }
 
     public List<Property> findAll() {
+        auth.require(Permission.VIEW_DATA);
         return propertyDao.findAll();
     }
 
     /** List rows with owner name and occupancy derived for today (BR-17). */
     public List<PropertyOccupancyRow> findRows(String text) {
+        auth.require(Permission.VIEW_DATA);
         return reportingDao.searchPropertyRows(text == null ? "" : text.trim(), LocalDate.now(clock), ROW_LIMIT);
     }
 
     /** Property, owner, current agreement, histories and totals for the detail screen. */
     public PropertyDetails details(Long propertyId) throws EstateFlowException {
+        auth.require(Permission.VIEW_DATA);
         Property property = get(propertyId);
         Owner owner = ownerDao.findById(property.getOwnerId()).orElse(null);
         LocalDate today = LocalDate.now(clock);

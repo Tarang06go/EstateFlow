@@ -1,5 +1,6 @@
 package com.estateflow.service;
 
+import com.estateflow.support.TestAuth;
 import com.estateflow.dao.*;
 import com.estateflow.exception.*;
 import com.estateflow.model.*;
@@ -32,7 +33,7 @@ class PaymentServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new PaymentService(paymentDao, chargeDao, reportingDao, tx, AuditService.noop(), CLOCK);
+        service = new PaymentService(paymentDao, chargeDao, reportingDao, tx, AuditService.noop(), CLOCK, TestAuth.admin());
         when(paymentDao.insert(any(Payment.class))).thenAnswer(i -> {
             Payment p = i.getArgument(0);
             p.setPaymentId(11L);

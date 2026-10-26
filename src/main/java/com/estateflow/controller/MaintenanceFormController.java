@@ -82,6 +82,7 @@ public class MaintenanceFormController extends AbstractDialogController {
             r.setCost(InputParser.optionalMoney("cost", "Cost", costField.getText()));
             UiTask.run(() -> existing == null ? ctx.maintenance().open(r) : ctx.maintenance().update(r), saved -> {
                 close();
+                nav.toast("Request saved");
                 onSaved.run();
             }, saveButton);
         } catch (EstateFlowException e) {

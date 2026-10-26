@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" styleClass="form" fx:controller="com.estateflow.controller.UserFormController">
+  <Label fx:id="usernameLabel" text="Username *" GridPane.rowIndex="0"/><TextField fx:id="usernameField" prefWidth="300" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+  <Label fx:id="passwordLabel" text="Password *" GridPane.rowIndex="1"/><PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+  <Label fx:id="confirmLabel" text="Confirm password *" GridPane.rowIndex="2"/><PasswordField fx:id="confirmField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+  <Label fx:id="roleLabel" text="Role *" GridPane.rowIndex="3"/><ComboBox fx:id="roleBox" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+  <Label fx:id="hintLabel" styleClass="caption" wrapText="true" maxWidth="300" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+  <HBox spacing="8" GridPane.rowIndex="5" GridPane.columnIndex="1">
+    <Button fx:id="saveButton" styleClass="btn-primary" text="Save" onAction="#onSave" defaultButton="true"/>
+    <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
+</GridPane>

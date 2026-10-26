@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.RentRemindersController">
-  <Label styleClass="screen-title" text="Rent reminders"/>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.RentRemindersController">
+  <VBox styleClass="page-header"><Label styleClass="page-title" text="Rent reminders"/><Label styleClass="page-subtitle" text="Overdue, due today and upcoming rent in one list."/></VBox>
   <Label fx:id="hintLabel" styleClass="hint"/>
   <FlowPane hgap="12" vgap="12">
     <VBox styleClass="card"><Label fx:id="overdueValue" styleClass="card-value status-bad"/><Label styleClass="card-label" text="Overdue"/></VBox>

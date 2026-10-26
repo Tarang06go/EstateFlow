@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.OverdueRentController">
-  <Label styleClass="screen-title" text="Overdue rent"/>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.OverdueRentController">
+  <VBox styleClass="page-header"><Label styleClass="page-title" text="Overdue rent"/><Label styleClass="page-subtitle" text="Unpaid rent charges whose due date has passed."/></VBox>
   <HBox spacing="8"><Label fx:id="totalLabel" styleClass="status-bad"/><Region HBox.hgrow="ALWAYS"/>
     <Button text="Open rent ledger" onAction="#onLedger"/><Button text="Export CSV..." onAction="#onExport"/>
     <Button text="Refresh" onAction="#reload"/></HBox>

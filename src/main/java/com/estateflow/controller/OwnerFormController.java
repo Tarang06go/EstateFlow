@@ -39,6 +39,7 @@ public class OwnerFormController extends AbstractDialogController {
             owner.setId(existing == null ? null : existing.getId());
             UiTask.run(() -> existing == null ? ctx.owners().create(owner) : ctx.owners().update(owner), saved -> {
                 close();
+                nav.toast("Owner saved");
                 onSaved.run();
             }, saveButton);
         } catch (EstateFlowException e) {

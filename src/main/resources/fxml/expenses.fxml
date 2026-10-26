@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.ExpenseListController">
+  <VBox styleClass="page-header"><Label styleClass="page-title" text="Expenses"/><Label styleClass="page-subtitle" text="Costs of running each property. Deleted expenses stay on record and never count in any total."/></VBox>
+  <HBox spacing="8" alignment="CENTER_LEFT">
+    <ComboBox fx:id="propertyBox" prefWidth="200" promptText="All properties"/>
+    <ComboBox fx:id="categoryBox" prefWidth="150" promptText="All categories"/>
+    <Label text="From"/><DatePicker fx:id="fromPicker" prefWidth="130"/>
+    <Label text="To"/><DatePicker fx:id="toPicker" prefWidth="130"/>
+    <CheckBox fx:id="deletedBox" text="Show deleted"/>
+    <Button styleClass="btn-primary" text="Search" onAction="#reload"/>
+    <Button text="Clear" onAction="#onClear"/>
+  </HBox>
+  <HBox spacing="8" alignment="CENTER_LEFT"><Label fx:id="countLabel" styleClass="hint"/><Region HBox.hgrow="ALWAYS"/>
+    <Button styleClass="btn-primary" text="Add expense" userData="MANAGE_RECORDS" onAction="#onAdd"/>
+    <Button text="Edit" userData="MANAGE_RECORDS" onAction="#onEdit"/>
+    <Button styleClass="btn-danger" text="Delete" userData="MANAGE_RECORDS" onAction="#onDelete"/></HBox>
+  <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

@@ -1,0 +1,14 @@
+package com.estateflow.controller;
+import com.estateflow.config.AppContext;import com.estateflow.model.*;import com.estateflow.util.*;import javafx.fxml.FXML;import javafx.scene.control.*;import java.util.*;
+public final class InspectionListController extends AbstractController{
+ private record Loaded(boolean ready,List<InspectionRecord> rows) { }
+ @FXML private TableView<InspectionRecord> table;
+ public InspectionListController(AppContext c,SceneNavigator n){super(c,n);}
+ @FXML private void initialize(){table.setPlaceholder(new Label("No inspections recorded. Create a property inspection to begin."));TableUtil.column(table,"No.",65,InspectionRecord::id);TableUtil.column(table,"Property",110,i->String.valueOf(i.propertyId()));TableUtil.column(table,"Date",120,i->fmt.date(i.inspectionDate()));TableUtil.column(table,"Type",110,i->i.type().name());TableUtil.column(table,"Status",110,InspectionRecord::status);TableUtil.column(table,"Findings",80,i->i.findings().size());TableUtil.column(table,"Summary",280,i->i.summary()==null?"":i.summary());reload();}
+ @FXML private void reload(){UiTask.run(()->ctx.inspections().isAvailable()?new Loaded(true,ctx.inspections().search(null)):new Loaded(false,List.of()),loaded->{table.getItems().setAll(loaded.rows());if(!loaded.ready())table.setPlaceholder(new Label("Inspections require the manual database migration db/migrations/v1.6_documents_inspections.sql."));});}
+ @FXML private void onAdd(){nav.<InspectionFormController>showDialog("inspection-form.fxml","New inspection",c->c.init(this::reload));}
+ @FXML private void onComplete(){InspectionRecord i=selected();if(i==null)return;UiTask.run(()->{ctx.inspections().complete(i.id());return null;},x->{nav.toast("Inspection completed");reload();});}
+ @FXML private void onFollowUp(){InspectionRecord i=selected();if(i==null)return;InspectionFinding f=i.findings().stream().filter(x->x.maintenanceRequestId()==null).filter(x->x.condition()==InspectionCondition.POOR||x.condition()==InspectionCondition.URGENT).findFirst().orElse(null);if(f==null){AlertUtil.info("Inspections","Select an inspection with an unlinked poor or urgent finding.");return;}UiTask.run(()->ctx.inspections().createMaintenanceFollowUp(i.id(),f.id()),r->{nav.toast("Maintenance request linked to finding");reload();});}
+ @FXML private void onDetails(){InspectionRecord i=selected();if(i!=null){String s=i.findings().stream().map(f->f.area()+" — "+f.condition()+"\n"+f.observation()+(f.followUpAction()==null?"":"\nFollow-up: "+f.followUpAction())+(f.maintenanceRequestId()==null?"":"\nMaintenance request #"+f.maintenanceRequestId())).reduce((a,b)->a+"\n\n"+b).orElse("No findings");AlertUtil.info("Inspection #"+i.id(),s);}}
+ private InspectionRecord selected(){var i=table.getSelectionModel().getSelectedItem();if(i==null)AlertUtil.info("Inspections","Select an inspection first.");return i;}
+}

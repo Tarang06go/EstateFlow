@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.WorkOrderListController">
+ <VBox styleClass="page-header"><Label styleClass="page-title" text="Work orders"/><Label styleClass="page-subtitle" text="Assign vendors, track due dates and costs, and link canonical expenses without double counting NOI."/></VBox>
+ <HBox spacing="8" alignment="CENTER_LEFT"><Label text="Status"/><ComboBox fx:id="statusFilter" prefWidth="140"/><Label text="Priority"/><ComboBox fx:id="priorityFilter" prefWidth="130"/><Label text="Due from"/><DatePicker fx:id="fromDate" prefWidth="130"/><Label text="to"/><DatePicker fx:id="toDate" prefWidth="130"/></HBox>
+ <HBox spacing="8" alignment="CENTER_LEFT"><ComboBox fx:id="propertyFilter" prefWidth="220" promptText="All properties"/><ComboBox fx:id="vendorFilter" prefWidth="200" promptText="All vendors"/><CheckBox fx:id="overdue" text="Overdue only"/><Button styleClass="btn-primary" text="Apply filters" onAction="#reload"/><Region HBox.hgrow="ALWAYS"/></HBox>
+ <HBox spacing="8"><Region HBox.hgrow="ALWAYS"/><Button styleClass="btn-primary" text="New work order" userData="MANAGE_RECORDS" onAction="#onAdd"/><Button text="Edit" userData="MANAGE_RECORDS" onAction="#onEdit"/><Button text="Assign vendor" userData="MANAGE_RECORDS" onAction="#onAssign"/><Button text="Change status" userData="MANAGE_RECORDS" onAction="#onStatus"/><Button text="Link expense" userData="MANAGE_RECORDS" onAction="#onExpense"/></HBox>
+ <Label fx:id="notice" styleClass="hint" wrapText="true"/><TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

@@ -1,5 +1,7 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.*;
 import com.estateflow.dto.OverdueRentRow;
 import com.estateflow.dto.PaymentReportRow;
@@ -33,8 +35,12 @@ public class PaymentService {
     private final AuditService audit;
     private final Clock clock;
 
+    private final Authorizer auth;
+
     public PaymentService(PaymentDao paymentDao, RentChargeDao chargeDao, ReportingDao reportingDao,
-                          TransactionManager tx, AuditService audit, Clock clock) {
+                          TransactionManager tx, AuditService audit, Clock clock,
+            Authorizer auth) {
+        this.auth = auth;
         this.paymentDao = paymentDao;
         this.chargeDao = chargeDao;
         this.reportingDao = reportingDao;
@@ -50,6 +56,7 @@ public class PaymentService {
     public Payment recordPayment(Long chargeId, BigDecimal amount, LocalDate paymentDate,
                                  PaymentMethod method, String referenceNo, String notes)
             throws EstateFlowException {
+        auth.require(Permission.RECORD_PAYMENTS);
         if (chargeId == null) {
             throw new ValidationException("Select a rent charge.", "charge");
         }
@@ -100,6 +107,7 @@ public class PaymentService {
 
     /** BR-25: void a wrong payment; never edit or delete it. */
     public void voidPayment(Long paymentId, String reason) throws EstateFlowException {
+        auth.require(Permission.RECORD_PAYMENTS);
         if (paymentId == null) {
             throw new ValidationException("Select a payment.", "payment");
         }
@@ -127,6 +135,7 @@ public class PaymentService {
     /** Filtered, capped payment rows; null dates / null voided flag mean "no filter". */
     public List<PaymentReportRow> search(String text, LocalDate from, LocalDate to, Boolean voidedOrNull)
             throws ValidationException {
+        auth.require(Permission.VIEW_DATA);
         if (from != null && to != null && to.isBefore(from)) {
             throw new ValidationException("The end date cannot be before the start date.", "dateRange");
         }
@@ -134,15 +143,18 @@ public class PaymentService {
     }
 
     public List<RentCharge> findCharges(Long agreementId) {
+        auth.require(Permission.VIEW_DATA);
         return chargeDao.findByAgreement(agreementId);
     }
 
     public List<Payment> findPayments(Long chargeId) {
+        auth.require(Permission.VIEW_DATA);
         return paymentDao.findByCharge(chargeId);
     }
 
     /** Outstanding balance of an agreement: balances of live charges already due (Section 5.4). */
     public BigDecimal outstandingBalance(Long agreementId) {
+        auth.require(Permission.VIEW_DATA);
         LocalDate today = LocalDate.now(clock);
         return chargeDao.findByAgreement(agreementId).stream()
                 .filter(c -> c.isPayable(today))
@@ -151,6 +163,7 @@ public class PaymentService {
     }
 
     public List<OverdueRentRow> findOverdue() {
+        auth.require(Permission.VIEW_DATA);
         return reportingDao.findOverdueRows(LocalDate.now(clock));
     }
 

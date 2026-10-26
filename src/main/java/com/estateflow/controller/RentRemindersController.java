@@ -35,11 +35,11 @@ public class RentRemindersController extends AbstractController {
         TableUtil.column(table, "Property", 170, RentReminderRow::propertyName);
         TableUtil.column(table, "Tenant", 160, RentReminderRow::tenantName);
         TableUtil.column(table, "Phone", 120, RentReminderRow::tenantPhone);
-        TableUtil.column(table, "Period start", 110, r -> DateFormats.format(r.periodStart()));
-        TableUtil.column(table, "Due date", 110, r -> DateFormats.format(r.dueDate()));
+        TableUtil.column(table, "Period start", 110, r -> fmt.date(r.periodStart()));
+        TableUtil.column(table, "Due date", 110, r -> fmt.date(r.dueDate()));
         TableUtil.column(table, "Days", 120, r -> r.daysUntilDue() < 0 ? (-r.daysUntilDue()) + " late"
                 : r.daysUntilDue() == 0 ? "today" : "in " + r.daysUntilDue());
-        TableUtil.column(table, "Balance", 110, r -> MoneyUtil.format(r.balance()));
+        TableUtil.column(table, "Balance", 110, r -> fmt.money(r.balance()));
         table.setRowFactory(t -> new TableRow<>() {
             @Override
             protected void updateItem(RentReminderRow row, boolean empty) {
@@ -67,7 +67,7 @@ public class RentRemindersController extends AbstractController {
         overdueValue.setText(String.valueOf(count(rows, RentReminderRow.Category.OVERDUE)));
         todayValue.setText(String.valueOf(count(rows, RentReminderRow.Category.DUE_TODAY)));
         upcomingValue.setText(String.valueOf(count(rows, RentReminderRow.Category.UPCOMING)));
-        totalValue.setText(MoneyUtil.format(rows.stream().map(RentReminderRow::balance).reduce(BigDecimal.ZERO, BigDecimal::add)));
+        totalValue.setText(fmt.money(rows.stream().map(RentReminderRow::balance).reduce(BigDecimal.ZERO, BigDecimal::add)));
     }
 
     private static long count(List<RentReminderRow> rows, RentReminderRow.Category category) {

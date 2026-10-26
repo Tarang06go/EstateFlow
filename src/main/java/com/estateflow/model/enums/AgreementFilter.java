@@ -2,7 +2,7 @@ package com.estateflow.model.enums;
 
 /** Status filter for agreement lists, defined with the same date logic as Section 5.4. */
 public enum AgreementFilter {
-    ALL("All"), ACTIVE("Active"), UPCOMING("Upcoming"), EXPIRED("Expired"), TERMINATED("Terminated");
+    ALL("All"), ACTIVE("Active"), UPCOMING("Upcoming"), EXPIRED("Expired"), TERMINATED("Terminated"), RENEWED("Renewed");
 
     private final String label;
 

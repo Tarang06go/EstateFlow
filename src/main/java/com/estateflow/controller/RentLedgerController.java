@@ -31,22 +31,22 @@ public class RentLedgerController extends AbstractController {
         agreementBox.setConverter(new javafx.util.StringConverter<>() {
             public String toString(AgreementListRow r) {
                 return r == null ? "" : "#" + r.agreementId() + "  " + r.propertyName() + " - " + r.tenantName()
-                        + "  (" + DateFormats.format(r.startDate()) + " to " + DateFormats.format(r.effectiveEndDate()) + ")";
+                        + "  (" + fmt.date(r.startDate()) + " to " + fmt.date(r.effectiveEndDate()) + ")";
             }
 
             public AgreementListRow fromString(String s) {
                 return null;
             }
         });
-        TableUtil.column(chargeTable, "Period", 200, c -> DateFormats.format(c.getPeriodStart()) + " - " + DateFormats.format(c.getPeriodEnd()));
-        TableUtil.column(chargeTable, "Due", 110, c -> DateFormats.format(c.getDueDate()));
-        TableUtil.column(chargeTable, "Amount due", 110, c -> MoneyUtil.format(c.getAmountDue()));
-        TableUtil.column(chargeTable, "Paid", 110, c -> MoneyUtil.format(c.getAmountPaid()));
-        TableUtil.column(chargeTable, "Balance", 110, c -> MoneyUtil.format(c.getBalance()));
+        TableUtil.column(chargeTable, "Period", 200, c -> fmt.date(c.getPeriodStart()) + " - " + fmt.date(c.getPeriodEnd()));
+        TableUtil.column(chargeTable, "Due", 110, c -> fmt.date(c.getDueDate()));
+        TableUtil.column(chargeTable, "Amount due", 110, c -> fmt.money(c.getAmountDue()));
+        TableUtil.column(chargeTable, "Paid", 110, c -> fmt.money(c.getAmountPaid()));
+        TableUtil.column(chargeTable, "Balance", 110, c -> fmt.money(c.getBalance()));
         TableUtil.column(chargeTable, "Status", 130, c -> c.status(today));
         TableUtil.column(paymentTable, "Receipt", 130, Payment::receiptNumber);
-        TableUtil.column(paymentTable, "Date", 110, p -> DateFormats.format(p.getPaymentDate()));
-        TableUtil.column(paymentTable, "Amount", 110, p -> MoneyUtil.format(p.getAmount()));
+        TableUtil.column(paymentTable, "Date", 110, p -> fmt.date(p.getPaymentDate()));
+        TableUtil.column(paymentTable, "Amount", 110, p -> fmt.money(p.getAmount()));
         TableUtil.column(paymentTable, "Method", 120, p -> p.getPaymentMethod().getDisplayLabel());
         TableUtil.column(paymentTable, "Reference", 120, Payment::getReferenceNo);
         TableUtil.column(paymentTable, "Status", 90, p -> p.isVoid() ? "VOID" : "Valid");
@@ -85,7 +85,7 @@ public class RentLedgerController extends AbstractController {
             Long keep = chargeTable.getSelectionModel().getSelectedItem() == null ? null
                     : chargeTable.getSelectionModel().getSelectedItem().getChargeId();
             chargeTable.getItems().setAll(charges);
-            outstandingLabel.setText("Outstanding: " + MoneyUtil.format((java.math.BigDecimal) data[1]));
+            outstandingLabel.setText("Outstanding: " + fmt.money((java.math.BigDecimal) data[1]));
             if (keep != null) {
                 charges.stream().filter(c -> c.getChargeId().equals(keep)).findFirst()
                         .ifPresent(c -> chargeTable.getSelectionModel().select(c));

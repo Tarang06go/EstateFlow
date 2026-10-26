@@ -36,10 +36,10 @@ public class MaintenanceListController extends AbstractController {
         TableUtil.column(table, "Title", 200, MaintenanceReportRow::title);
         TableUtil.column(table, "Priority", 80, MaintenanceReportRow::priority);
         TableUtil.column(table, "Status", 100, MaintenanceReportRow::status);
-        TableUtil.column(table, "Reported", 110, r -> DateFormats.format(r.reportedDate()));
-        TableUtil.column(table, "Resolved", 110, r -> DateFormats.format(r.resolvedDate()));
+        TableUtil.column(table, "Reported", 110, r -> fmt.date(r.reportedDate()));
+        TableUtil.column(table, "Resolved", 110, r -> fmt.date(r.resolvedDate()));
         TableUtil.column(table, "Assigned to", 120, MaintenanceReportRow::assignedTo);
-        TableUtil.column(table, "Cost", 90, r -> r.cost() == null ? "" : MoneyUtil.format(r.cost()));
+        TableUtil.column(table, "Cost", 90, r -> r.cost() == null ? "" : fmt.money(r.cost()));
         reload();
     }
 

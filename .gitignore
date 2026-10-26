@@ -4,6 +4,7 @@
 
 # Maven build output
 target/
+release/
 
 # Application logs
 logs/
@@ -19,6 +20,11 @@ db-test.properties
 
 # Windows
 Thumbs.db
+
+# Local MySQL credentials and database backups (never stage or share these files)
+mysql-backup.cnf
+*.cnf
+estateflow_backup*.sql
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -76,6 +82,6 @@ db-test.properties
 .env.*
 
 # Windows
-Thumbs.db*_backup*.sql
+Thumbs.db
 target/
 logs/

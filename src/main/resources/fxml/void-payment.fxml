@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" prefWidth="420" fx:controller="com.estateflow.controller.VoidPaymentController">
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" prefWidth="420" fx:controller="com.estateflow.controller.VoidPaymentController">
   <Label fx:id="infoLabel" wrapText="true"/>
   <Label text="Reason for voiding * (1 to 255 characters)"/>
   <TextArea fx:id="reasonArea" prefRowCount="3" wrapText="true"/>
   <Label styleClass="hint" wrapText="true" text="A voided payment stays in the history but no longer counts toward any balance. Record the correct payment afterwards."/>
-  <HBox spacing="8"><Button fx:id="voidButton" styleClass="button-danger" text="Void payment" onAction="#onVoid"/>
+  <HBox spacing="8"><Button fx:id="voidButton" styleClass="btn-danger" text="Void payment" onAction="#onVoid"/>
     <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
 </VBox>

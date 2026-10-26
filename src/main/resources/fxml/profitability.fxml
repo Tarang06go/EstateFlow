@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" fitToHeight="false" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-background-color: #F6F7F4;"
+            fx:controller="com.estateflow.controller.ProfitabilityController">
+  <VBox styleClass="page">
+    <VBox styleClass="page-header"><Label styleClass="page-title" text="Profitability"/><Label styleClass="page-subtitle" text="Rent actually received, operating expenses and net operating income, on a cash basis from live records."/></VBox>
+    <FlowPane hgap="8" vgap="8" alignment="CENTER_LEFT">
+      <Label text="From"/><DatePicker fx:id="fromPicker" prefWidth="130"/>
+      <Label text="To"/><DatePicker fx:id="toPicker" prefWidth="130"/>
+      <ComboBox fx:id="propertyBox" prefWidth="210" promptText="All properties"/>
+      <Button fx:id="refreshButton" styleClass="btn-primary" text="Refresh" onAction="#refresh"/>
+      <Label styleClass="caption" text="Export"/><ComboBox fx:id="formatBox" prefWidth="90"/>
+      <Button text="Property report..." onAction="#onExport"/>
+    </FlowPane>
+    <HBox fx:id="kpiRow" spacing="12"/>
+    <Label fx:id="noteLabel" styleClass="hint" wrapText="true"/>
+    <VBox fx:id="trendCard" styleClass="card" spacing="6"/>
+    <VBox fx:id="categoryCard" styleClass="card" spacing="6"/>
+    <VBox fx:id="propertyCard" styleClass="card" spacing="6"/>
+    <Label fx:id="resultLabel" styleClass="hint"/>
+  </VBox>
+</ScrollPane>

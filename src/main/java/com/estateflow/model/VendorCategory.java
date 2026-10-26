@@ -1,0 +1,2 @@
+package com.estateflow.model;
+public enum VendorCategory { PLUMBING, ELECTRICAL, HVAC, GENERAL_REPAIRS, CLEANING, LANDSCAPING, PEST_CONTROL, SECURITY, OTHER }

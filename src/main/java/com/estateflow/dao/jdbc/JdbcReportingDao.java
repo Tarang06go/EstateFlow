@@ -230,13 +230,20 @@ public class JdbcReportingDao extends BaseJdbcDao implements ReportingDao {
         }, rs -> new MonthlyAmount(YearMonth.parse(rs.getString("ym")), rs.getBigDecimal("total")));
     }
 
+    private static final String PROPERTY_ROW_SELECT = "SELECT pr.property_id, pr.name, pr.city, pr.is_active, pr.listed_rent, "
+            + "o.full_name AS owner_name, t.full_name AS tenant_name, ra.agreement_id FROM property pr "
+            + "JOIN owner o ON o.owner_id = pr.owner_id LEFT JOIN rental_agreement ra ON ra.property_id = pr.property_id AND "
+            + SqlFragments.OCCUPIES + " LEFT JOIN tenant t ON t.tenant_id = ra.tenant_id ";
+
+    private static final RowMapper<PropertyOccupancyRow> PROPERTY_ROW_MAPPER = rs -> new PropertyOccupancyRow(
+            rs.getLong("property_id"), rs.getString("name"), rs.getString("city"), rs.getString("owner_name"),
+            rs.getBoolean("is_active"), longOrNull(rs, "agreement_id") != null, rs.getString("tenant_name"),
+            rs.getBigDecimal("listed_rent"));
+
     @Override
     public List<PropertyOccupancyRow> searchPropertyRows(String text, LocalDate today, int limit) {
         String needle = text == null ? "" : text.trim();
-        return queryList("search property rows", "SELECT pr.property_id, pr.name, pr.city, pr.is_active, pr.listed_rent, "
-                + "o.full_name AS owner_name, t.full_name AS tenant_name, ra.agreement_id FROM property pr "
-                + "JOIN owner o ON o.owner_id = pr.owner_id LEFT JOIN rental_agreement ra ON ra.property_id = pr.property_id AND "
-                + SqlFragments.OCCUPIES + " LEFT JOIN tenant t ON t.tenant_id = ra.tenant_id "
+        return queryList("search property rows", PROPERTY_ROW_SELECT
                 + "WHERE (? = '' OR pr.name LIKE ? OR pr.city LIKE ? OR pr.address_line LIKE ? OR o.full_name LIKE ?) "
                 + "ORDER BY pr.name, pr.property_id LIMIT ?", ps -> {
             ps.setObject(1, today);
@@ -246,9 +253,75 @@ public class JdbcReportingDao extends BaseJdbcDao implements ReportingDao {
                 ps.setString(i, like(needle));
             }
             ps.setInt(8, limit);
-        }, rs -> new PropertyOccupancyRow(rs.getLong("property_id"), rs.getString("name"), rs.getString("city"),
-                rs.getString("owner_name"), rs.getBoolean("is_active"), longOrNull(rs, "agreement_id") != null,
-                rs.getString("tenant_name"), rs.getBigDecimal("listed_rent")));
+        }, PROPERTY_ROW_MAPPER);
+    }
+
+    @Override
+    public List<PropertyOccupancyRow> findPropertyRowsForOwner(Long ownerId, LocalDate today) {
+        return queryList("list properties of owner", PROPERTY_ROW_SELECT + "WHERE pr.owner_id = ? ORDER BY pr.name, pr.property_id", ps -> {
+            ps.setObject(1, today);
+            ps.setObject(2, today);
+            ps.setLong(3, ownerId);
+        }, PROPERTY_ROW_MAPPER);
+    }
+
+    @Override
+    public List<PropertyOccupancyRow> findVacantPropertyRows(LocalDate today, int limit) {
+        return queryList("list vacant properties", PROPERTY_ROW_SELECT + "WHERE pr.is_active = 1 AND ra.agreement_id IS NULL "
+                + "ORDER BY pr.name, pr.property_id LIMIT ?", ps -> {
+            ps.setObject(1, today);
+            ps.setObject(2, today);
+            ps.setInt(3, limit);
+        }, PROPERTY_ROW_MAPPER);
+    }
+
+    @Override
+    public List<MonthlyAmount> monthlyExpectedRent(LocalDate from, LocalDate to) {
+        return queryList("sum expected rent per month", "SELECT DATE_FORMAT(rc.due_date, '%Y-%m') AS ym, SUM(rc.amount_due) AS total "
+                + "FROM rent_charge rc WHERE " + SqlFragments.LIVE_CHARGE + " AND rc.due_date BETWEEN ? AND ? GROUP BY ym ORDER BY ym", ps -> {
+            ps.setObject(1, from);
+            ps.setObject(2, to);
+        }, rs -> new MonthlyAmount(YearMonth.parse(rs.getString("ym")), rs.getBigDecimal("total")));
+    }
+
+    @Override
+    public List<MaintenanceReportRow> findOpenMaintenanceRows(int limit) {
+        return queryList("list open maintenance", MAINTENANCE_ROW_SELECT + "WHERE m.status IN ('OPEN', 'IN_PROGRESS') "
+                + "ORDER BY FIELD(m.priority, 'URGENT', 'HIGH', 'MEDIUM', 'LOW'), m.reported_date, m.request_id LIMIT ?",
+                ps -> ps.setInt(1, limit), MAINTENANCE_ROW_MAPPER);
+    }
+
+    @Override
+    public List<PaymentReportRow> findPaymentRowsForTenant(Long tenantId) {
+        return queryList("list payments of tenant", PAYMENT_ROW_SELECT + "WHERE ra.tenant_id = ? "
+                + "ORDER BY p.payment_date DESC, p.payment_id DESC", ps -> ps.setLong(1, tenantId), PAYMENT_ROW_MAPPER);
+    }
+
+    @Override
+    public List<MaintenanceReportRow> findMaintenanceRowsForTenant(Long tenantId) {
+        return queryList("list maintenance of tenant", MAINTENANCE_ROW_SELECT + "WHERE m.tenant_id = ? "
+                + "ORDER BY m.reported_date DESC, m.request_id DESC", ps -> ps.setLong(1, tenantId), MAINTENANCE_ROW_MAPPER);
+    }
+
+    @Override
+    public BigDecimal outstandingForTenant(Long tenantId, LocalDate today) {
+        return queryOne("sum outstanding of tenant", "SELECT COALESCE(SUM(rc.amount_due - " + SqlFragments.AMOUNT_PAID
+                + "), 0) AS outstanding FROM rent_charge rc JOIN rental_agreement ra ON ra.agreement_id = rc.agreement_id "
+                + "WHERE ra.tenant_id = ? AND " + SqlFragments.LIVE_CHARGE + " AND rc.due_date <= ?", ps -> {
+            ps.setLong(1, tenantId);
+            ps.setObject(2, today);
+        }, rs -> rs.getBigDecimal("outstanding")).orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public BigDecimal outstandingForOwner(Long ownerId, LocalDate today) {
+        return queryOne("sum outstanding of owner", "SELECT COALESCE(SUM(rc.amount_due - " + SqlFragments.AMOUNT_PAID
+                + "), 0) AS outstanding FROM rent_charge rc JOIN rental_agreement ra ON ra.agreement_id = rc.agreement_id "
+                + "JOIN property pr ON pr.property_id = ra.property_id "
+                + "WHERE pr.owner_id = ? AND " + SqlFragments.LIVE_CHARGE + " AND rc.due_date <= ?", ps -> {
+            ps.setLong(1, ownerId);
+            ps.setObject(2, today);
+        }, rs -> rs.getBigDecimal("outstanding")).orElse(BigDecimal.ZERO);
     }
 
     @Override
@@ -259,6 +332,42 @@ public class JdbcReportingDao extends BaseJdbcDao implements ReportingDao {
             ps.setLong(1, propertyId);
             ps.setObject(2, today);
         }, rs -> rs.getBigDecimal("outstanding")).orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public AdvancedAnalyticsReport.CollectionMetrics collectionMetrics(LocalDate from, LocalDate to) {
+        return queryOne("summarize rent collection performance", "SELECT COUNT(*) AS charge_count, "
+                + "COALESCE(SUM(CASE WHEN rc.amount_due <= " + SqlFragments.AMOUNT_PAID + " THEN 1 ELSE 0 END), 0) AS fully_collected, "
+                + "COALESCE(SUM(rc.amount_due), 0) AS billed, COALESCE(SUM(" + SqlFragments.AMOUNT_PAID + "), 0) AS collected, "
+                + "COALESCE(SUM(GREATEST(rc.amount_due - " + SqlFragments.AMOUNT_PAID + ", 0)), 0) AS outstanding "
+                + "FROM rent_charge rc WHERE " + SqlFragments.LIVE_CHARGE + " AND rc.due_date BETWEEN ? AND ?", ps -> {
+            ps.setObject(1, from);
+            ps.setObject(2, to);
+        }, rs -> {
+            BigDecimal billed = rs.getBigDecimal("billed");
+            BigDecimal collected = rs.getBigDecimal("collected");
+            BigDecimal rate = billed.signum() == 0 ? BigDecimal.ZERO
+                    : collected.multiply(BigDecimal.valueOf(100)).divide(billed, 2, RoundingMode.HALF_UP);
+            return new AdvancedAnalyticsReport.CollectionMetrics(rs.getInt("charge_count"),
+                    rs.getInt("fully_collected"), billed, collected, rs.getBigDecimal("outstanding"), rate);
+        }).orElse(new AdvancedAnalyticsReport.CollectionMetrics(0, 0, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO));
+    }
+
+    @Override
+    public List<AdvancedAnalyticsReport.ArrearsBucket> arrearsAging(LocalDate today) {
+        return queryList("group overdue rent by age", "SELECT CASE WHEN x.days_overdue <= 30 THEN '1-30 days' "
+                + "WHEN x.days_overdue <= 60 THEN '31-60 days' WHEN x.days_overdue <= 90 THEN '61-90 days' "
+                + "ELSE 'Over 90 days' END AS age_band, COUNT(*) AS charge_count, SUM(x.balance) AS balance "
+                + "FROM (SELECT DATEDIFF(?, rc.due_date) AS days_overdue, rc.amount_due - " + SqlFragments.AMOUNT_PAID
+                + " AS balance FROM rent_charge rc WHERE " + SqlFragments.LIVE_CHARGE + " AND rc.due_date < ? "
+                + "AND rc.amount_due > " + SqlFragments.AMOUNT_PAID + ") x GROUP BY age_band "
+                + "ORDER BY CASE age_band WHEN '1-30 days' THEN 1 WHEN '31-60 days' THEN 2 "
+                + "WHEN '61-90 days' THEN 3 ELSE 4 END", ps -> {
+            ps.setObject(1, today);
+            ps.setObject(2, today);
+        }, rs -> new AdvancedAnalyticsReport.ArrearsBucket(rs.getString("age_band"), rs.getInt("charge_count"),
+                rs.getBigDecimal("balance")));
     }
 
     @Override

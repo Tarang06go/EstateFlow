@@ -1,5 +1,7 @@
 package com.estateflow.service;
 
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.AgreementDao;
 import com.estateflow.dao.MaintenanceDao;
 import com.estateflow.dao.PropertyDao;
@@ -36,8 +38,12 @@ public class MaintenanceService {
     private final AuditService audit;
     private final Clock clock;
 
+    private final Authorizer auth;
+
     public MaintenanceService(MaintenanceDao maintenanceDao, PropertyDao propertyDao, AgreementDao agreementDao,
-                              ReportingDao reportingDao, TransactionManager tx, AuditService audit, Clock clock) {
+                              ReportingDao reportingDao, TransactionManager tx, AuditService audit, Clock clock,
+            Authorizer auth) {
+        this.auth = auth;
         this.maintenanceDao = maintenanceDao;
         this.propertyDao = propertyDao;
         this.agreementDao = agreementDao;
@@ -49,6 +55,7 @@ public class MaintenanceService {
 
     /** BR-30, BR-32: open a new request. New requests are always OPEN and carry no cost. */
     public MaintenanceRequest open(MaintenanceRequest request) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         if (request == null) {
             throw new ValidationException("Request details are required.", null);
         }
@@ -77,13 +84,19 @@ public class MaintenanceService {
         }
         request.setStatus(MaintenanceStatus.OPEN);
         request.setResolvedDate(null);
-        MaintenanceRequest saved = maintenanceDao.insert(request);
+        MaintenanceRequest saved = tx.inTransaction(() -> {
+            MaintenanceRequest inserted = maintenanceDao.insert(request);
+            audit.record("MAINTENANCE", inserted.getRequestId(), "CREATED", null, AuditService.details(
+                    "propertyId", inserted.getPropertyId(), "title", inserted.getTitle(), "priority", inserted.getPriority().name()));
+            return inserted;
+        });
         log.info("Maintenance request {} opened for property {}", saved.getRequestId(), saved.getPropertyId());
         return saved;
     }
 
     /** Edits title, description, priority, assignee, and cost (BR-32); status changes use changeStatus. */
     public MaintenanceRequest update(MaintenanceRequest edited) throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         MaintenanceRequest existing = get(edited.getRequestId());
         validateText(edited);
         if (edited.getCost() != null) {
@@ -94,13 +107,18 @@ public class MaintenanceService {
         existing.setPriority(edited.getPriority());
         existing.setAssignedTo(edited.getAssignedTo());
         existing.setCost(edited.getCost());
-        saveExisting(existing);
+        tx.runInTransaction(() -> {
+            saveExisting(existing);
+            audit.record("MAINTENANCE", existing.getRequestId(), "UPDATED", null, AuditService.details(
+                    "title", existing.getTitle(), "priority", existing.getPriority().name(), "cost", existing.getCost()));
+        });
         return existing;
     }
 
     /** BR-31: workflow transition; RESOLVED requires a resolved date, other statuses clear it. */
     public MaintenanceRequest changeStatus(Long requestId, MaintenanceStatus target, LocalDate resolvedDate)
             throws EstateFlowException {
+        auth.require(Permission.MANAGE_RECORDS);
         MaintenanceRequest request = get(requestId);
         MaintenanceStatus before = request.getStatus();
         if (target == null || !request.getStatus().canTransitionTo(target)) {
@@ -134,6 +152,7 @@ public class MaintenanceService {
     }
 
     public MaintenanceRequest get(Long requestId) throws EntityNotFoundException {
+        auth.require(Permission.VIEW_DATA);
         if (requestId == null) {
             throw new EntityNotFoundException("Request not found.");
         }
@@ -143,11 +162,13 @@ public class MaintenanceService {
 
     /** Joined rows with property and tenant names; a null status returns everything. */
     public List<MaintenanceReportRow> findRows(MaintenanceStatus statusOrNull) {
+        auth.require(Permission.VIEW_DATA);
         return reportingDao.findMaintenanceRows(statusOrNull);
     }
 
     /** Counts, recorded costs, average resolution time and cost trends (last six months, zero-filled). */
     public MaintenanceSummary summary() {
+        auth.require(Permission.VIEW_DATA);
         YearMonth thisMonth = YearMonth.from(LocalDate.now(clock));
         MaintenanceSummary raw = reportingDao.maintenanceSummary(thisMonth.minusMonths(5).atDay(1), thisMonth.atEndOfMonth());
         return new MaintenanceSummary(raw.countByStatus(), raw.openByPriority(), raw.resolvedCost(), raw.inProgressCost(),

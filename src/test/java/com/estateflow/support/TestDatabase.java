@@ -75,22 +75,56 @@ public final class TestDatabase {
                     throw new IllegalStateException("Refusing to truncate schema '" + live + "': name must end with _test");
                 }
             }
-            boolean hasAudit;
-            try (ResultSet rs = st.executeQuery("SELECT 1 FROM information_schema.tables WHERE table_schema = DATABASE() "
-                    + "AND table_name = 'audit_log'")) {
-                hasAudit = rs.next();
-            }
+            boolean hasAudit = tableExists(st, "audit_log");
+            boolean hasUsers = tableExists(st, "app_user");
+            boolean hasExpenses = tableExists(st, "expense");
+            boolean hasDeposits = tableExists(st, "deposit_transaction");
+            boolean hasDocuments = tableExists(st, "property_document");
+            boolean hasInspections = tableExists(st, "inspection");
+            boolean hasWorkOrders = tableExists(st, "work_order");
+            boolean hasVendors = tableExists(st, "maintenance_vendor");
             st.execute("SET FOREIGN_KEY_CHECKS = 0");
             try {
+                if (hasDocuments) {
+                    st.execute("TRUNCATE TABLE property_document"); // v1.6/v1.7 metadata; file data is outside the database
+                }
+                if (hasInspections) {
+                    st.execute("TRUNCATE TABLE inspection_finding");
+                    st.execute("TRUNCATE TABLE inspection");
+                }
+                if (hasWorkOrders) {
+                    st.execute("TRUNCATE TABLE work_order"); // v1.7 references properties, requests and expenses
+                }
+                if (hasVendors) {
+                    st.execute("TRUNCATE TABLE maintenance_vendor");
+                }
                 for (String table : TABLES_CHILD_FIRST) {
                     st.execute("TRUNCATE TABLE " + table);
                 }
                 if (hasAudit) {
                     st.execute("TRUNCATE TABLE audit_log"); // v1.1 table, present only after the migration
                 }
+                if (hasUsers) {
+                    st.execute("TRUNCATE TABLE app_user"); // v1.2 table, present only after the migration
+                }
+                if (hasDeposits) { // v1.5 tables, present only after the migration
+                    st.execute("TRUNCATE TABLE deposit_transaction");
+                    st.execute("TRUNCATE TABLE security_deposit");
+                    st.execute("TRUNCATE TABLE lease_change");
+                }
+                if (hasExpenses) {
+                    st.execute("TRUNCATE TABLE expense"); // v1.4 table, present only after the migration
+                }
             } finally {
                 st.execute("SET FOREIGN_KEY_CHECKS = 1");
             }
+        }
+    }
+
+    private static boolean tableExists(Statement st, String table) throws SQLException {
+        try (ResultSet rs = st.executeQuery("SELECT 1 FROM information_schema.tables WHERE table_schema = DATABASE() "
+                + "AND table_name = '" + table + "'")) {
+            return rs.next();
         }
     }
 }

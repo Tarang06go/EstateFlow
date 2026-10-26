@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="form" spacing="8" fx:controller="com.estateflow.controller.WorkOrderFormController">
+ <Label styleClass="page-title" text="Work-order details"/><Label text="A work order stays linked to its property. Use an existing maintenance request where relevant." wrapText="true"/>
+ <Label text="Property"/><ComboBox fx:id="propertyBox" maxWidth="Infinity"/><Label text="Maintenance request number (optional)"/><TextField fx:id="requestId"/><Label text="Title"/><TextField fx:id="title"/><Label text="Scope"/><TextArea fx:id="scope" prefRowCount="3"/><Label text="Priority"/><ComboBox fx:id="priority" maxWidth="Infinity"/><Label text="Due date"/><DatePicker fx:id="dueDate"/><Label text="Estimated cost"/><TextField fx:id="estimated" promptText="Optional"/>
+ <HBox spacing="8" alignment="CENTER_RIGHT"><Button text="Cancel" onAction="#onCancel"/><Button fx:id="saveButton" styleClass="btn-primary" text="Save draft" onAction="#onSave"/></HBox>
+</VBox>

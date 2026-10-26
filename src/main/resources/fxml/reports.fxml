@@ -1,16 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.ReportsController">
-  <Label styleClass="screen-title" text="Reports &amp; exports"/>
-  <HBox spacing="8"><Label text="Format"/><ComboBox fx:id="formatBox" prefWidth="170"/>
-    <Label styleClass="hint" text="PDF for printing and sharing, CSV for Excel."/></HBox>
-  <HBox spacing="8"><Label text="Payments from"/><DatePicker fx:id="fromPicker"/><Label text="to"/><DatePicker fx:id="toPicker"/>
-    <Button text="Export payments..." onAction="#onPayments"/></HBox>
-  <HBox spacing="8"><Label text="Overdue rent as of today"/><Button text="Export overdue rent..." onAction="#onOverdue"/></HBox>
-  <HBox spacing="8"><Label text="Property occupancy as of today"/><Button text="Export occupancy..." onAction="#onOccupancy"/></HBox>
-  <HBox spacing="8"><Label text="Maintenance status"/><ComboBox fx:id="statusBox" prefWidth="160"/>
-    <Button text="Export maintenance..." onAction="#onMaintenance"/></HBox>
-  <HBox spacing="8"><Label text="Rent reminders (overdue and upcoming)"/><Button text="Export rent reminders..." onAction="#onReminders"/></HBox>
-  <Label fx:id="resultLabel" styleClass="hint"/>
-</VBox>
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F6F7F4;"
+            fx:controller="com.estateflow.controller.ReportsController">
+  <VBox styleClass="page">
+    <HBox alignment="CENTER_LEFT" spacing="12">
+      <VBox styleClass="page-header"><Label styleClass="page-title" text="Reports"/><Label styleClass="page-subtitle" text="Export PDF or CSV reports. Every figure comes from live records."/></VBox>
+      <Region HBox.hgrow="ALWAYS"/><Label styleClass="caption" text="Format"/><ComboBox fx:id="formatBox" prefWidth="110"/>
+    </HBox>
+    <VBox styleClass="card" spacing="12">
+      <Label styleClass="card-title" text="Financial"/>
+      <HBox spacing="10" alignment="CENTER_LEFT"><VBox HBox.hgrow="ALWAYS"><Label styleClass="list-row-title" text="Payment history"/><Label styleClass="list-row-sub" text="Valid and voided payments in a date range; totals count valid payments only."/></VBox>
+        <DatePicker fx:id="fromPicker" prefWidth="130"/><DatePicker fx:id="toPicker" prefWidth="130"/><Button text="Export" onAction="#onPayments"/></HBox>
+      <Separator/>
+      <HBox spacing="10" alignment="CENTER_LEFT"><VBox HBox.hgrow="ALWAYS"><Label styleClass="list-row-title" text="Overdue rent"/><Label styleClass="list-row-sub" text="Unpaid charges past their due date, oldest first."/></VBox>
+        <Button text="Export" onAction="#onOverdue"/></HBox>
+      <Separator/>
+      <HBox spacing="10" alignment="CENTER_LEFT"><VBox HBox.hgrow="ALWAYS"><Label styleClass="list-row-title" text="Rent reminders"/><Label styleClass="list-row-sub" text="Overdue, due today and upcoming rent."/></VBox>
+        <Button text="Export" onAction="#onReminders"/></HBox>
+    </VBox>
+    <VBox styleClass="card" spacing="12">
+      <Label styleClass="card-title" text="Portfolio"/>
+      <HBox spacing="10" alignment="CENTER_LEFT"><VBox HBox.hgrow="ALWAYS"><Label styleClass="list-row-title" text="Property portfolio and occupancy"/><Label styleClass="list-row-sub" text="Every property with owner, tenant today and listed rent."/></VBox>
+        <Button text="Export" onAction="#onOccupancy"/></HBox>
+      <Separator/>
+      <HBox spacing="10" alignment="CENTER_LEFT"><VBox HBox.hgrow="ALWAYS"><Label styleClass="list-row-title" text="Rental agreements"/><Label styleClass="list-row-sub" text="Filter by status; includes combined monthly rent."/></VBox>
+        <ComboBox fx:id="agreementBox" prefWidth="150"/><Button text="Export" onAction="#onAgreements"/></HBox>
+      <Separator/>
+      <HBox spacing="10" alignment="CENTER_LEFT"><VBox HBox.hgrow="ALWAYS"><Label styleClass="list-row-title" text="Expiring leases"/><Label styleClass="list-row-sub" text="Agreements ending within the configured warning window."/></VBox>
+        <Button text="Export" onAction="#onExpiring"/></HBox>
+    </VBox>
+    <VBox styleClass="card" spacing="12">
+      <Label styleClass="card-title" text="Operations"/>
+      <HBox spacing="10" alignment="CENTER_LEFT"><VBox HBox.hgrow="ALWAYS"><Label styleClass="list-row-title" text="Maintenance requests"/><Label styleClass="list-row-sub" text="Filter by status; includes recorded cost."/></VBox>
+        <ComboBox fx:id="statusBox" prefWidth="150"/><Button text="Export" onAction="#onMaintenance"/></HBox>
+    </VBox>
+    <Label fx:id="resultLabel" styleClass="hint"/>
+  </VBox>
+</ScrollPane>

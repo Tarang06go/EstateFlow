@@ -33,7 +33,7 @@ public class CsvWriter {
             if (i > 0) {
                 sb.append(',');
             }
-            sb.append(escape(cells.get(i)));
+            sb.append(escape(sanitizeSpreadsheetFormula(cells.get(i))));
         }
         return sb.append(EOL).toString();
     }
@@ -45,6 +45,18 @@ public class CsvWriter {
         if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
             return '"' + value.replace("\"", "\"\"") + '"';
         }
+        return value;
+    }
+
+    /** Prevent exported user-controlled text from becoming a spreadsheet formula when opened in Excel. */
+    static String sanitizeSpreadsheetFormula(String value) {
+        if (value == null || value.isEmpty()) return value;
+        String trimmed = value.stripLeading();
+        if (trimmed.isEmpty()) return value;
+        // Keep a legitimate negative decimal numeric. Other leading formula markers are treated as text.
+        if (value.matches("-\\d+(\\.\\d+)?")) return value;
+        char first = trimmed.charAt(0);
+        if (first == '=' || first == '+' || first == '-' || first == '@' || first == '\t' || first == '\r') return "'" + value;
         return value;
     }
 }

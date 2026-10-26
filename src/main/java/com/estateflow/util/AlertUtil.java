@@ -12,6 +12,17 @@ public final class AlertUtil {
     private AlertUtil() {
     }
 
+    private static void style(Alert alert) {
+        alert.getDialogPane().getStylesheets().add(AlertUtil.class.getResource("/css/estateflow.css").toExternalForm());
+        alert.getDialogPane().setMinWidth(420);
+        for (ButtonType type : alert.getButtonTypes()) {
+            javafx.scene.control.Button button = (javafx.scene.control.Button) alert.getDialogPane().lookupButton(type);
+            if (button != null && (type == ButtonType.OK)) {
+                button.getStyleClass().add("btn-primary");
+            }
+        }
+    }
+
     public static void info(String title, String message) {
         show(Alert.AlertType.INFORMATION, title, message);
     }
@@ -28,6 +39,7 @@ public final class AlertUtil {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.OK, ButtonType.CANCEL);
         alert.setTitle(title);
         alert.setHeaderText(null);
+        style(alert);
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
     }
@@ -40,6 +52,7 @@ public final class AlertUtil {
         Alert alert = new Alert(type, message, ButtonType.OK);
         alert.setTitle(title);
         alert.setHeaderText(null);
+        style(alert);
         alert.showAndWait();
     }
 }

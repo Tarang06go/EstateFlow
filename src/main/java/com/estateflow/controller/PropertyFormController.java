@@ -69,6 +69,7 @@ public class PropertyFormController extends AbstractDialogController {
             p.setListedRent(InputParser.requiredMoney("listedRent", "Listed rent", rentField.getText()));
             UiTask.run(() -> existing == null ? ctx.properties().create(p) : ctx.properties().update(p), saved -> {
                 close();
+                nav.toast("Property saved");
                 onSaved.run();
             }, saveButton);
         } catch (EstateFlowException e) {

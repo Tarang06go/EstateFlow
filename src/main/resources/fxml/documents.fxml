@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.DocumentListController">
+ <VBox styleClass="page-header"><Label styleClass="page-title" text="Documents"/><Label styleClass="page-subtitle" text="Private property records and supporting files. PDF, PNG and JPEG; up to 20 MB each."/></VBox>
+ <HBox spacing="8"><TextField fx:id="query" promptText="Search name or category" onAction="#reload"/><CheckBox fx:id="archived" text="Include archived"/><Button text="Search" onAction="#reload"/><Region HBox.hgrow="ALWAYS"/><Button styleClass="btn-primary" text="Add document" userData="MANAGE_RECORDS" onAction="#onAdd"/><Button text="Open" onAction="#onOpen"/><Button text="Replace" userData="MANAGE_RECORDS" onAction="#onReplace"/><Button text="Archive" userData="MANAGE_RECORDS" onAction="#onArchive"/></HBox>
+ <Label fx:id="notice" styleClass="hint" wrapText="true"/><TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

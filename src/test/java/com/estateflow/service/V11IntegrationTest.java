@@ -1,5 +1,6 @@
 package com.estateflow.service;
 
+import com.estateflow.support.TestAuth;
 import com.estateflow.dao.AuditDao;
 import com.estateflow.dao.jdbc.*;
 import com.estateflow.db.DatabaseManager;
@@ -267,8 +268,8 @@ class V11IntegrationTest extends IntegrationTestBase {
 
         assertEquals(List.of("CREATED", "TERMINATED"), actions("AGREEMENT"));
         assertEquals(List.of("RECORDED", "VOIDED"), actions("PAYMENT"));
-        assertEquals(List.of("DEACTIVATED"), actions("PROPERTY"));
-        assertEquals(List.of("STATUS_CHANGED"), actions("MAINTENANCE"));
+        assertEquals(List.of("CREATED", "DEACTIVATED"), actions("PROPERTY")); // v1.2 audits property create
+        assertEquals(List.of("CREATED", "STATUS_CHANGED"), actions("MAINTENANCE")); // v1.2 audits maintenance create
         AuditEntry voidEntry = ctx.audit().find("PAYMENT", pay.getPaymentId(), 10).get(0);
         assertEquals(LocalDateTime.of(2026, 10, 10, 8, 0), voidEntry.createdAt());
         assertTrue(voidEntry.newValue().contains("typo"));
@@ -291,10 +292,12 @@ class V11IntegrationTest extends IntegrationTestBase {
     /** An audit DAO that always fails on insert: the audited operation must roll back with it. */
     static class FailingAuditDao implements AuditDao {
         public boolean isAvailable() { return true; }
-        public void insert(String t, long id, String a, String o, String n, LocalDateTime at) {
+        public boolean supportsActor() { return true; }
+        public void insert(String t, long id, String a, String o, String n, LocalDateTime at, Long actorId, String actor) {
             throw new DataAccessException("simulated audit failure", new java.sql.SQLException("boom", "HY000"));
         }
         public List<AuditEntry> find(String t, Long id, int limit) { return List.of(); }
+        public List<AuditEntry> search(String t, Long id, String action, String actor, boolean userEvents, int limit) { return List.of(); }
     }
 
     @Test
@@ -306,16 +309,16 @@ class V11IntegrationTest extends IntegrationTestBase {
         long charge = ctx.payments().findCharges(good.getAgreementId()).get(0).getChargeId();
 
         DatabaseManager db = ctx.databaseManager();
-        AuditService failing = new AuditService(new FailingAuditDao(), CLOCK);
+        AuditService failing = new AuditService(new FailingAuditDao(), CLOCK, TestAuth.admin());
         JdbcTransactionManager tx = new JdbcTransactionManager(db);
         PaymentService payments = new PaymentService(new JdbcPaymentDao(db), new JdbcRentChargeDao(db),
-                new JdbcReportingDao(db), tx, failing, CLOCK);
+                new JdbcReportingDao(db), tx, failing, CLOCK, TestAuth.admin());
         assertThrows(DataAccessException.class,
                 () -> payments.recordPayment(charge, bd("100.00"), TODAY, PaymentMethod.CASH, null, null));
         assertEquals(0, ctx.payments().findPayments(charge).size(), "payment must not survive a failed audit insert");
 
         AgreementService agreements = new AgreementService(new JdbcAgreementDao(db), new JdbcRentChargeDao(db),
-                new JdbcPaymentDao(db), new JdbcPropertyDao(db), new JdbcTenantDao(db), tx, failing, CLOCK, 30);
+                new JdbcPaymentDao(db), new JdbcPropertyDao(db), new JdbcTenantDao(db), tx, failing, CLOCK, 30, TestAuth.admin());
         Property other = Fixtures.property(ctx, Fixtures.owner(ctx));
         assertThrows(DataAccessException.class, () -> agreements.create(other.getPropertyId(), t.getId(),
                 LocalDate.of(2026, 11, 1), 3, bd("500.00"), null, null));

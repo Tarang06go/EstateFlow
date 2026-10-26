@@ -23,6 +23,7 @@ public class ReportsController extends AbstractController {
     @FXML private DatePicker fromPicker, toPicker;
     @FXML private ComboBox<String> statusBox;
     @FXML private ComboBox<ReportFormat> formatBox;
+    @FXML private ComboBox<com.estateflow.model.enums.AgreementFilter> agreementBox;
     @FXML private Label resultLabel;
 
     public ReportsController(AppContext ctx, SceneNavigator nav) {
@@ -42,6 +43,8 @@ public class ReportsController extends AbstractController {
         statusBox.setValue(ALL);
         formatBox.getItems().setAll(ReportFormat.values());
         formatBox.setValue(ReportFormat.PDF);
+        agreementBox.getItems().setAll(com.estateflow.model.enums.AgreementFilter.values());
+        agreementBox.setValue(com.estateflow.model.enums.AgreementFilter.ALL);
     }
 
     private File choose(String baseName) {
@@ -111,6 +114,23 @@ public class ReportsController extends AbstractController {
         File file = choose("rent-reminders");
         if (file != null) {
             UiTask.run(() -> ctx.reports().exportRentReminders(file.toPath(), format()), n -> done(file, n));
+        }
+    }
+
+    @FXML
+    private void onAgreements() {
+        com.estateflow.model.enums.AgreementFilter filter = agreementBox.getValue();
+        File file = choose("agreements");
+        if (file != null) {
+            UiTask.run(() -> ctx.reports().exportAgreements(filter, file.toPath(), format()), n -> done(file, n));
+        }
+    }
+
+    @FXML
+    private void onExpiring() {
+        File file = choose("expiring-leases");
+        if (file != null) {
+            UiTask.run(() -> ctx.reports().exportExpiringLeases(file.toPath(), format()), n -> done(file, n));
         }
     }
 }

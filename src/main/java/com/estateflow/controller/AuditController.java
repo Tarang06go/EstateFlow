@@ -16,12 +16,12 @@ public class AuditController extends AbstractController {
     private static final String ALL = "All";
     private static final DateTimeFormatter STAMP = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
 
-    private record Data(boolean enabled, List<AuditEntry> entries) {
+    private record Data(boolean enabled, boolean actorTracked, List<AuditEntry> entries) {
     }
 
     @FXML private Label statusLabel;
     @FXML private ComboBox<String> typeBox;
-    @FXML private TextField idField;
+    @FXML private TextField idField, userField;
     @FXML private TableView<AuditEntry> table;
 
     public AuditController(AppContext ctx, SceneNavigator nav) {
@@ -30,10 +30,14 @@ public class AuditController extends AbstractController {
 
     @FXML
     private void initialize() {
-        typeBox.getItems().setAll(ALL, "AGREEMENT", "PAYMENT", "OWNER", "TENANT", "PROPERTY", "MAINTENANCE");
+        typeBox.getItems().setAll(ALL, "AGREEMENT", "PAYMENT", "OWNER", "TENANT", "PROPERTY", "MAINTENANCE", "EXPENSE", "DEPOSIT");
+        if (ctx.authorizer().can(com.estateflow.security.Permission.MANAGE_USERS)) {
+            typeBox.getItems().add("USER"); // account events are administrator-only
+        }
         typeBox.setValue(ALL);
         typeBox.valueProperty().addListener((o, a, b) -> reload());
         TableUtil.column(table, "When (UTC)", 150, e -> STAMP.format(e.createdAt()));
+        TableUtil.column(table, "By", 110, e -> e.actorUsername() == null ? "-" : e.actorUsername());
         TableUtil.column(table, "Record", 110, AuditEntry::entityType);
         TableUtil.column(table, "No.", 60, AuditEntry::entityId);
         TableUtil.column(table, "Action", 130, AuditEntry::action);
@@ -48,7 +52,9 @@ public class AuditController extends AbstractController {
         try {
             Long id = InputParser.optionalInt("recordNo", "Record number", idField.getText()) == null ? null
                     : Long.valueOf(idField.getText().trim());
-            UiTask.run(() -> new Data(ctx.audit().isEnabled(), ctx.audit().find(type, id, 500)), this::render);
+            String user = userField.getText() == null || userField.getText().isBlank() ? null : userField.getText().trim();
+            UiTask.run(() -> new Data(ctx.audit().isEnabled(), ctx.audit().recordsActor(),
+                    ctx.audit().search(type, id, null, user, 500)), this::render);
         } catch (EstateFlowException e) {
             ErrorHandler.handle(e);
         }
@@ -60,8 +66,9 @@ public class AuditController extends AbstractController {
                     + "(see PATCH_README.md); until then the application works normally but records no audit entries.");
             table.setPlaceholder(new Label("Audit history is not enabled."));
         } else {
-            statusLabel.setText("Important operations (agreements, payments, voids, activation changes, maintenance status) "
-                    + "are recorded with the previous and new values. Entries cannot be edited or deleted.");
+            statusLabel.setText("Important operations are recorded with the user, the previous value and the new value. "
+                    + "Entries cannot be edited or deleted."
+                    + (data.actorTracked() ? "" : " The user is not being recorded yet: apply db/migrations/v1.3_audit_actor.sql."));
             table.setPlaceholder(new Label("No audit entries match."));
         }
         table.getItems().setAll(data.entries());
@@ -71,6 +78,7 @@ public class AuditController extends AbstractController {
     private void onClear() {
         typeBox.setValue(ALL);
         idField.clear();
+        userField.clear();
         reload();
     }
 }

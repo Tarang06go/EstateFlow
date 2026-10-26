@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.TenantListController">
-  <Label styleClass="screen-title" text="Tenants"/>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.TenantListController">
+  <VBox styleClass="page-header"><Label styleClass="page-title" text="Tenants"/><Label styleClass="page-subtitle" text="Residents, contact details and ID proof on file."/></VBox>
   <HBox spacing="8">
     <TextField fx:id="searchField" promptText="Search name, phone, email, ID number" prefWidth="320" onAction="#reload"/>
     <Button text="Search" onAction="#reload"/><Region HBox.hgrow="ALWAYS"/>
-    <Button styleClass="button-primary" text="Add tenant" onAction="#onAdd"/>
-    <Button text="Edit" onAction="#onEdit"/>
-    <Button fx:id="toggleButton" text="Deactivate / Reactivate" onAction="#onToggleActive"/>
+    <Button styleClass="btn-primary" text="Add tenant" onAction="#onAdd" userData="MANAGE_RECORDS"/>
+    <Button text="Profile" onAction="#onProfile"/>
+    <Button text="Edit" onAction="#onEdit" userData="MANAGE_RECORDS"/>
+    <Button fx:id="toggleButton" text="Deactivate / Reactivate" onAction="#onToggleActive" userData="MANAGE_RECORDS"/>
   </HBox>
   <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
 </VBox>

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" fx:controller="com.estateflow.controller.RentLedgerController">
-  <Label styleClass="screen-title" text="Rent &amp; payments"/>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.RentLedgerController">
+  <VBox styleClass="page-header"><Label styleClass="page-title" text="Rent &amp; payments"/><Label styleClass="page-subtitle" text="Monthly rent charges, payments and balances for one agreement."/></VBox>
   <HBox spacing="8"><Label text="Agreement:"/><ComboBox fx:id="agreementBox" prefWidth="460"/>
     <Label fx:id="outstandingLabel" styleClass="status-bad"/></HBox>
   <Label styleClass="hint" text="Rent charges (a period becomes payable on its due date; advance payments are not accepted)"/>
   <TableView fx:id="chargeTable" prefHeight="260"/>
   <HBox spacing="8">
-    <Button fx:id="payButton" styleClass="button-primary" text="Record payment" onAction="#onPay"/>
-    <Button text="Void payment" onAction="#onVoid"/>
+    <Button fx:id="payButton" styleClass="btn-primary" text="Record payment" onAction="#onPay" userData="RECORD_PAYMENTS"/>
+    <Button text="Void payment" onAction="#onVoid" userData="RECORD_PAYMENTS"/>
     <Button text="Save receipt..." onAction="#onReceipt"/></HBox>
   <Label styleClass="hint" text="Payments for the selected charge (voided payments are greyed and excluded from balances)"/>
   <TableView fx:id="paymentTable" VBox.vgrow="ALWAYS"/>

@@ -16,7 +16,7 @@ public final class PdfReceiptWriter {
     private static final float[] BRAND = PdfTableReport.BRAND;
     private static final float[] WHITE = PdfTableReport.WHITE;
     private static final float[] RULE = PdfTableReport.RULE;
-    private static final float[] SOFT = {0.93f, 0.96f, 1f};
+    private static final float[] SOFT = {0.898f, 0.945f, 0.910f};
 
     public void write(Path target, PaymentReceiptData d, String generatedOn, String pdfDate) throws ReportExportException {
         try {
@@ -32,8 +32,9 @@ public final class PdfReceiptWriter {
         float right = pdf.width() - 48;
 
         pdf.fillRect(0, 0, pdf.width(), 92, BRAND);
-        pdf.text(left, 46, "EstateFlow", 24, true, WHITE);
-        pdf.text(left, 68, "Property & Rental Management", 10, false, WHITE);
+        PdfLogo.drawOnDark(pdf, left, 24, 46);
+        pdf.text(left + 60, 46, "EstateFlow", 24, true, WHITE);
+        pdf.text(left + 60, 68, "Property & Rental Management", 10, false, WHITE);
         pdf.textRight(right, 46, "RENT RECEIPT", 18, true, WHITE);
         pdf.textRight(right, 68, d.receiptNumber(), 11, false, WHITE);
 

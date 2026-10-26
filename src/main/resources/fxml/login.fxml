@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<StackPane xmlns:fx="http://javafx.com/fxml" styleClass="login-root" fx:controller="com.estateflow.controller.LoginController">
+  <HBox>
+    <VBox styleClass="login-brand-panel" minWidth="400" prefWidth="400" maxWidth="400" spacing="18">
+      <StackPane fx:id="brandHolder" alignment="CENTER_LEFT"/>
+      <Label styleClass="login-tagline" wrapText="true" text="Property and rental management, kept simple and in one place."/>
+    </VBox>
+    <StackPane HBox.hgrow="ALWAYS" alignment="CENTER">
+      <VBox styleClass="card" maxWidth="400" prefWidth="400" maxHeight="-Infinity" spacing="10" style="-fx-padding: 28 28 24 28;">
+        <Label fx:id="titleLabel" styleClass="page-title" text="Sign in"/>
+        <Label fx:id="subtitleLabel" styleClass="page-subtitle" wrapText="true" text="Checking the database..."/>
+        <Label text="Username" style="-fx-padding: 8 0 0 0;"/>
+        <TextField fx:id="usernameField" promptText="Username"/>
+        <Label text="Password"/>
+        <StackPane>
+          <PasswordField fx:id="passwordField" promptText="Password"/>
+          <TextField fx:id="passwordText" promptText="Password" visible="false" managed="false"/>
+        </StackPane>
+        <VBox fx:id="confirmBox" spacing="10" visible="false" managed="false">
+          <Label text="Confirm password"/>
+          <PasswordField fx:id="confirmField" promptText="Repeat the password"/>
+        </VBox>
+        <CheckBox fx:id="showPassword" text="Show password"/>
+        <Label fx:id="errorLabel" styleClass="login-error" wrapText="true" visible="false" managed="false"/>
+        <Button fx:id="submitButton" styleClass="btn-primary" maxWidth="Infinity" defaultButton="true" text="Sign in" onAction="#onSubmit"/>
+        <HBox spacing="8"><Button fx:id="faceLoginButton" maxWidth="Infinity" HBox.hgrow="ALWAYS" text="Verify with face" onAction="#onFaceLogin" disable="true"/><Button fx:id="cancelFaceButton" text="Cancel" onAction="#onCancelFaceLogin"/></HBox>
+        <Label fx:id="faceStatusLabel" styleClass="caption" wrapText="true"/>
+        <Label fx:id="hintLabel" styleClass="caption" wrapText="true"/>
+      </VBox>
+    </StackPane>
+  </HBox>
+</StackPane>

@@ -31,9 +31,9 @@ public class AgreementListController extends AbstractController {
         TableUtil.column(table, "No.", 60, AgreementListRow::agreementId);
         TableUtil.column(table, "Property", 170, AgreementListRow::propertyName);
         TableUtil.column(table, "Tenant", 160, AgreementListRow::tenantName);
-        TableUtil.column(table, "Start", 110, r -> DateFormats.format(r.startDate()));
-        TableUtil.column(table, "Effective end", 120, r -> DateFormats.format(r.effectiveEndDate()));
-        TableUtil.column(table, "Monthly rent", 110, r -> MoneyUtil.format(r.monthlyRent()));
+        TableUtil.column(table, "Start", 110, r -> fmt.date(r.startDate()));
+        TableUtil.column(table, "Effective end", 120, r -> fmt.date(r.effectiveEndDate()));
+        TableUtil.column(table, "Monthly rent", 110, r -> fmt.money(r.monthlyRent()));
         TableUtil.column(table, "Status", 140, r -> r.status() == AgreementStatus.TERMINATED ? "Terminated"
                 : r.startDate().isAfter(today) ? "Upcoming" : r.effectiveEndDate().isBefore(today) ? "Expired" : "Active");
         reload();

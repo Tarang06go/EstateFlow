@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" fx:controller="com.estateflow.controller.VendorListController">
+ <VBox styleClass="page-header"><Label styleClass="page-title" text="Maintenance vendors"/><Label styleClass="page-subtitle" text="Service providers and their contact details."/></VBox>
+ <HBox spacing="8"><TextField fx:id="query" promptText="Search name, category or phone" onAction="#reload"/><CheckBox fx:id="inactive" text="Include inactive"/><Button text="Search" onAction="#reload"/><Region HBox.hgrow="ALWAYS"/><Button styleClass="btn-primary" text="Add vendor" userData="MANAGE_RECORDS" onAction="#onAdd"/><Button text="Edit" userData="MANAGE_RECORDS" onAction="#onEdit"/></HBox>
+ <Label fx:id="notice" styleClass="hint" wrapText="true"/><TableView fx:id="table" VBox.vgrow="ALWAYS"/>
+</VBox>

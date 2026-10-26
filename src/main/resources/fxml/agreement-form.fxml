@@ -11,6 +11,6 @@
   <Label text="Notes" GridPane.rowIndex="6"/><TextField fx:id="notesField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
   <Label fx:id="previewLabel" styleClass="hint" wrapText="true" prefWidth="320" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
   <HBox spacing="8" GridPane.rowIndex="8" GridPane.columnIndex="1">
-    <Button fx:id="saveButton" styleClass="button-primary" text="Create agreement" onAction="#onSave" defaultButton="true"/>
+    <Button fx:id="saveButton" styleClass="btn-primary" text="Create agreement" onAction="#onSave" defaultButton="true"/>
     <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
 </GridPane>

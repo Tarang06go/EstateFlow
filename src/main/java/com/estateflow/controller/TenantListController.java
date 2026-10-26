@@ -21,8 +21,14 @@ public class TenantListController extends AbstractController {
         TableUtil.column(table, "Name", 190, Tenant::getFullName);
         TableUtil.column(table, "Phone", 130, Tenant::getPhone);
         TableUtil.column(table, "Email", 190, Tenant::getEmail);
-        TableUtil.column(table, "ID proof", 170, t -> t.getIdProofType() == null ? "" : t.getIdProofType() + " " + t.getIdProofNumber());
+        TableUtil.column(table, "ID proof", 170, t -> t.getIdProofType() == null ? "" : t.getIdProofType() + " " + com.estateflow.util.Masking.idNumber(t.getIdProofNumber()));
         TableUtil.column(table, "Status", 80, o -> o.isActive() ? "Active" : "Inactive");
+        table.setPlaceholder(new Label("Nothing here yet. Use the Add button to create the first record."));
+        table.setOnMouseClicked(e -> {
+            if (e.getButton() == javafx.scene.input.MouseButton.PRIMARY && e.getClickCount() == 2) {
+                onProfile();
+            }
+        });
         reload();
     }
 
@@ -35,6 +41,16 @@ public class TenantListController extends AbstractController {
     @FXML
     private void onAdd() {
         nav.<TenantFormController>showDialog("tenant-form.fxml", "Add tenant", c -> c.init(null, this::reload));
+    }
+
+    @FXML
+    private void onProfile() {
+        Tenant selected = table.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertUtil.info("Profile", "Select a row first.");
+            return;
+        }
+        nav.<TenantDetailController>showDialog("tenant-detail.fxml", "Tenant profile", c -> c.init(selected.getId()));
     }
 
     @FXML

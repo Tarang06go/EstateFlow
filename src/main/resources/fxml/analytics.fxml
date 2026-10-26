@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fitToWidth="true" hbarPolicy="NEVER"
+            style="-fx-background-color: #F6F7F4;" fx:controller="com.estateflow.controller.AnalyticsController">
+  <VBox styleClass="page" spacing="12">
+    <VBox styleClass="page-header">
+      <Label styleClass="page-title" text="Advanced Analytics"/>
+      <Label styleClass="page-subtitle" text="Collection performance, arrears, occupancy, lease exposure, maintenance and clearly labeled estimates."/>
+    </VBox>
+    <FlowPane hgap="8" vgap="8" alignment="CENTER_LEFT">
+      <Label text="From"/><DatePicker fx:id="fromPicker" prefWidth="130"/>
+      <Label text="To"/><DatePicker fx:id="toPicker" prefWidth="130"/>
+      <Label text="Collection property"/><ComboBox fx:id="propertyFilter" prefWidth="190"/>
+      <Button styleClass="btn-primary" text="Refresh" onAction="#refresh"/>
+      <ComboBox fx:id="formatBox" prefWidth="90"/>
+      <Button text="Export collection..." onAction="#onExportCollection"/>
+      <Button text="Export report..." onAction="#onExport"/>
+    </FlowPane>
+    <Label styleClass="caption" text="The collection property filter applies to the rent collection, arrears, follow-up, and late-settlement sections. Portfolio analytics below remain unfiltered." wrapText="true"/>
+    <VBox styleClass="card" spacing="8">
+      <Label styleClass="card-title" text="Rent collection insights"/>
+      <Label fx:id="collectionTotalsLabel" styleClass="kpi-value" wrapText="true"/>
+      <Label fx:id="collectionDefinitionLabel" styleClass="caption" wrapText="true"/>
+      <TableView fx:id="collectionTrendTable" prefHeight="220"><placeholder><Label text="No charges or receipts in this period."/></placeholder></TableView>
+      <Label styleClass="card-title" text="By property"/>
+      <TableView fx:id="propertyCollectionTable" prefHeight="220"><placeholder><Label text="No charges due in this period."/></placeholder></TableView>
+      <VBox fx:id="tenantInsightCard" styleClass="card" spacing="6">
+        <Label styleClass="card-title" text="Tenant collection detail"/>
+        <Label styleClass="caption" text="Available to Administrators and Managers. Viewer role does not receive tenant-level report data or exports." wrapText="true"/>
+        <TableView fx:id="tenantCollectionTable" prefHeight="220"><placeholder><Label text="No tenant-level charges in this period."/></placeholder></TableView>
+      </VBox>
+    </VBox>
+    <VBox styleClass="card" spacing="6">
+      <Label styleClass="card-title" text="Balances requiring follow-up"/>
+      <Label styleClass="caption" text="Outstanding live charges overdue as of today. Sort by due date, age, property or balance." wrapText="true"/>
+      <TableView fx:id="followUpTable" prefHeight="280"><placeholder><Label text="No overdue balances require follow-up."/></placeholder></TableView>
+    </VBox>
+    <VBox fx:id="behaviorCard" styleClass="card" spacing="6">
+      <Label styleClass="card-title" text="Late settlement history"/>
+      <Label styleClass="caption" text="Uses fully settled live charges due in the selected period, capped to the latest 12 months. A repeated pattern means at least 3 late settlements among at least 3 fully settled charges. This is descriptive history, not a tenant score; partial or open charges are not classified." wrapText="true"/>
+      <TableView fx:id="paymentBehaviorTable" prefHeight="230"><placeholder><Label text="No fully settled charges in the observation period."/></placeholder></TableView>
+    </VBox>
+    <Label fx:id="collectionStatusLabel" styleClass="caption" wrapText="true"/>
+    <HBox fx:id="kpiRow" spacing="12"/>
+    <Label fx:id="noteLabel" styleClass="hint" wrapText="true"/>
+    <VBox fx:id="trendCard" styleClass="card" spacing="6"/>
+    <VBox styleClass="card" spacing="6">
+      <Label styleClass="card-title" text="Current arrears aging"/>
+      <Label styleClass="caption" text="Unpaid live charges grouped by days after due date."/>
+      <TableView fx:id="arrearsTable" prefHeight="190"/>
+    </VBox>
+    <VBox styleClass="card" spacing="6">
+      <Label styleClass="card-title" text="Lease expiries by month"/>
+      <Label styleClass="caption" text="Agreements ending within the configured warning period."/>
+      <TableView fx:id="leaseTable" prefHeight="210"/>
+    </VBox>
+    <VBox styleClass="card" spacing="6">
+      <Label styleClass="card-title" text="Maintenance and vendors"/>
+      <Label fx:id="maintenanceLabel" styleClass="hint" wrapText="true"/>
+      <TableView fx:id="vendorTable" prefHeight="240"><placeholder><Label text="No completed work orders in this period, or v1.7 is not installed."/></placeholder></TableView>
+    </VBox>
+    <Label fx:id="statusLabel" styleClass="caption" wrapText="true"/>
+  </VBox>
+</ScrollPane>

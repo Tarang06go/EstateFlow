@@ -22,7 +22,14 @@ public final class UiTask {
         return t;
     });
 
+    private static final javafx.beans.property.IntegerProperty PENDING = new javafx.beans.property.SimpleIntegerProperty(0);
+
     private UiTask() {
+    }
+
+    /** Number of background tasks currently running; the shell shows a thin progress bar while it is above zero. */
+    public static javafx.beans.property.ReadOnlyIntegerProperty pendingProperty() {
+        return PENDING;
     }
 
     public static <T> void run(Callable<T> work, Consumer<T> onSuccess, Node... disableWhileRunning) {
@@ -34,6 +41,7 @@ public final class UiTask {
         for (Node n : disableWhileRunning) {
             n.setDisable(true);
         }
+        PENDING.set(PENDING.get() + 1);
         Task<T> task = new Task<>() {
             @Override
             protected T call() throws Exception {
@@ -41,14 +49,32 @@ public final class UiTask {
             }
         };
         task.setOnSucceeded(e -> {
+            PENDING.set(PENDING.get() - 1);
             enable(disableWhileRunning);
             onSuccess.accept(task.getValue());
         });
         task.setOnFailed(e -> {
+            PENDING.set(PENDING.get() - 1);
             enable(disableWhileRunning);
             onFailure.accept(task.getException());
         });
         POOL.execute(task);
+    }
+
+    /** Background operation with a caller-visible cancellation handle for camera and native work. */
+    public static <T> Task<T> runCancellable(Callable<T> work, Consumer<T> onSuccess,
+                                              Consumer<Throwable> onFailure, Runnable onCancelled,
+                                              Node... disableWhileRunning) {
+        for (Node n : disableWhileRunning) n.setDisable(true);
+        PENDING.set(PENDING.get() + 1);
+        Task<T> task = new Task<>() {
+            @Override protected T call() throws Exception { return work.call(); }
+        };
+        task.setOnSucceeded(e -> { PENDING.set(PENDING.get()-1); enable(disableWhileRunning); onSuccess.accept(task.getValue()); });
+        task.setOnFailed(e -> { PENDING.set(PENDING.get()-1); enable(disableWhileRunning); onFailure.accept(task.getException()); });
+        task.setOnCancelled(e -> { PENDING.set(PENDING.get()-1); enable(disableWhileRunning); onCancelled.run(); });
+        POOL.execute(task);
+        return task;
     }
 
     /** For service calls without a result. */

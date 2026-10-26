@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <property name="ESTATEFLOW_LOG_DIR" value="${user.home}/.estateflow/logs"/>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %logger{30} - %msg%n</pattern>
@@ -7,9 +8,9 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/estateflow.log</file>
+        <file>${ESTATEFLOW_LOG_DIR}/estateflow.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/estateflow.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${ESTATEFLOW_LOG_DIR}/estateflow.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>5MB</maxFileSize>
             <maxHistory>30</maxHistory>
         </rollingPolicy>

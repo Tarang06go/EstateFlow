@@ -1,5 +1,6 @@
 package com.estateflow.service;
 
+import com.estateflow.support.TestAuth;
 import com.estateflow.dao.*;
 import com.estateflow.dto.*;
 import com.estateflow.exception.*;
@@ -37,7 +38,7 @@ class MaintenanceReportingServicesTest {
     @BeforeEach
     void setUp() {
         maintenance = new MaintenanceService(maintenanceDao, propertyDao, agreementDao, reportingDao,
-                new PassThroughTransactionManager(), AuditService.noop(), CLOCK);
+                new PassThroughTransactionManager(), AuditService.noop(), CLOCK, TestAuth.admin());
         when(maintenanceDao.insert(any(MaintenanceRequest.class))).thenAnswer(i -> {
             MaintenanceRequest r = i.getArgument(0);
             r.setRequestId(3L);
@@ -151,14 +152,14 @@ class MaintenanceReportingServicesTest {
     // ---- reporting
     @Test
     void dashboard_passesTodayAndMonthBoundsFromClock() {
-        DashboardService dashboard = new DashboardService(reportingDao, CLOCK, 30);
+        DashboardService dashboard = new DashboardService(reportingDao, CLOCK, 30, TestAuth.admin());
         dashboard.stats();
         verify(reportingDao).dashboardStats(TODAY, 30, LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31));
     }
 
     @Test
     void receipt_voidedPayment_throwsBr25_validPayment_building() throws Exception {
-        ReceiptService receipts = new ReceiptService(paymentDao, reportingDao, new ReceiptWriter());
+        ReceiptService receipts = new ReceiptService(paymentDao, reportingDao, new ReceiptWriter(), TestAuth.admin());
         Payment voided = new Payment(5L, new BigDecimal("100.00"), TODAY, PaymentMethod.CASH, null, null);
         voided.setPaymentId(1L);
         voided.setVoidedAt(LocalDateTime.of(2026, 10, 9, 0, 0));
@@ -178,7 +179,7 @@ class MaintenanceReportingServicesTest {
 
     @Test
     void reports_exportPayments_writesCsvAndValidatesRange(@TempDir Path dir) throws Exception {
-        ReportService reports = new ReportService(reportingDao, new CsvWriter(), CLOCK);
+        ReportService reports = new ReportService(reportingDao, new CsvWriter(), CLOCK, TestAuth.admin());
         when(reportingDao.findPaymentRows(any(), any())).thenReturn(List.of(new PaymentReportRow(1L, "RCP-2026-000001",
                 TODAY, "Ravi, K", "Flat \"4B\"", LocalDate.of(2026, 10, 1), new BigDecimal("100.00"),
                 PaymentMethod.CASH, null, true, "typo")));

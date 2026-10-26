@@ -1,5 +1,11 @@
 package com.estateflow.service;
 
+import java.util.Optional;
+import com.estateflow.model.AppUser;
+import com.estateflow.exception.AuthorizationException;
+import com.estateflow.security.Authorizer;
+import com.estateflow.security.Session;
+import com.estateflow.security.Permission;
 import com.estateflow.dao.AuditDao;
 import com.estateflow.dto.AuditEntry;
 
@@ -17,18 +23,24 @@ import java.util.Map;
  */
 public class AuditService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AuditService.class);
+
     private final AuditDao dao;
     private final Clock clock;
     private volatile Boolean available;
 
-    public AuditService(AuditDao dao, Clock clock) {
+    private final Authorizer auth;
+
+    public AuditService(AuditDao dao, Clock clock,
+            Authorizer auth) {
+        this.auth = auth;
         this.dao = dao;
         this.clock = clock;
     }
 
     /** A disabled instance for tests and for contexts without auditing. */
     public static AuditService noop() {
-        return new AuditService(null, null);
+        return new AuditService(null, null, new Authorizer(new Session()));
     }
 
     public boolean isEnabled() {
@@ -52,17 +64,64 @@ public class AuditService {
         return map;
     }
 
+    /**
+     * Writes an entry attributed to the signed-in user (id and username come from the session, never from the
+     * caller). Runs inside the caller's transaction and lets failures propagate, so a data change and its audit entry
+     * commit or roll back together: nothing changes without being audited. Entries made while nobody is signed in
+     * (first-administrator setup) carry no user.
+     */
     public void record(String entityType, long entityId, String action, Map<String, ?> oldValue, Map<String, ?> newValue) {
         if (!isEnabled()) {
             return;
         }
+        Optional<AppUser> actor = auth.session().currentUser();
         dao.insert(entityType, entityId, action, toJson(oldValue), toJson(newValue),
-                LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC));
+                LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC),
+                actor.map(AppUser::id).orElse(null), actor.map(AppUser::username).orElse(null));
+    }
+
+    /**
+     * For informational events (sign-in, sign-out, failed sign-in) that must never block the action they describe:
+     * a failure to audit is logged as a warning and swallowed.
+     */
+    public void recordBestEffort(String entityType, long entityId, String action, Map<String, ?> oldValue, Map<String, ?> newValue) {
+        try {
+            record(entityType, entityId, action, oldValue, newValue);
+        } catch (RuntimeException e) {
+            log.warn("Could not write audit entry {} {} #{}: {}", action, entityType, entityId, e.toString());
+        }
     }
 
     /** Newest first. Returns an empty list when auditing is unavailable. */
     public List<AuditEntry> find(String entityTypeOrNull, Long entityIdOrNull, int limit) {
-        return isEnabled() ? dao.find(entityTypeOrNull, entityIdOrNull, limit) : List.of();
+        return search(entityTypeOrNull, entityIdOrNull, null, null, limit);
+    }
+
+    /**
+     * Filtered history for roles with {@link Permission#VIEW_AUDIT}. Account events (entity type USER) are visible to
+     * administrators only; for other roles they are excluded, and asking for them explicitly is refused.
+     */
+    public List<AuditEntry> search(String entityTypeOrNull, Long entityIdOrNull, String actionOrNull,
+                                   String actorUsernameOrNull, int limit) {
+        if (dao == null) {
+            return List.of(); // the disabled no-op instance holds no data
+        }
+        auth.require(Permission.VIEW_AUDIT);
+        boolean userEvents = auth.can(Permission.MANAGE_USERS);
+        if (!userEvents && "USER".equals(entityTypeOrNull)) {
+            throw new AuthorizationException("Your role does not permit this action.");
+        }
+        if (!isEnabled()) {
+            return List.of();
+        }
+        String actor = actorUsernameOrNull == null || actorUsernameOrNull.isBlank() ? null
+                : actorUsernameOrNull.trim().toLowerCase(java.util.Locale.ROOT);
+        return dao.search(entityTypeOrNull, entityIdOrNull, actionOrNull, actor, userEvents, limit);
+    }
+
+    /** True when entries also record the signed-in user (v1.3 migration applied). */
+    public boolean recordsActor() {
+        return isEnabled() && dao.supportsActor();
     }
 
     static String toJson(Map<String, ?> map) {

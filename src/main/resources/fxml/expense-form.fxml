@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" styleClass="form" fx:controller="com.estateflow.controller.ExpenseFormController">
+  <Label text="Property *" GridPane.rowIndex="0"/><ComboBox fx:id="propertyBox" prefWidth="320" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+  <Label text="Category *" GridPane.rowIndex="1"/><ComboBox fx:id="categoryBox" prefWidth="200" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+  <Label text="Expense date *" GridPane.rowIndex="2"/><DatePicker fx:id="datePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+  <Label text="Amount *" GridPane.rowIndex="3"/><TextField fx:id="amountField" promptText="e.g. 1250.00" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+  <Label text="Payment method *" GridPane.rowIndex="4"/><ComboBox fx:id="methodBox" prefWidth="200" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+  <Label text="Reference no." GridPane.rowIndex="5"/><TextField fx:id="referenceField" promptText="Invoice, bill or cheque number (optional)" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+  <Label text="Description *" GridPane.rowIndex="6"/><TextArea fx:id="descriptionArea" prefRowCount="3" wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+  <Label text="Maintenance request" GridPane.rowIndex="7"/><HBox spacing="6" GridPane.rowIndex="7" GridPane.columnIndex="1"><ComboBox fx:id="requestBox" prefWidth="260" promptText="None (optional)"/><Button text="Clear" onAction="#onClearRequest"/></HBox>
+  <Label styleClass="hint" wrapText="true" maxWidth="320" text="Link this expense to the maintenance request it paid for, so the repair is counted once. Do not record loan or mortgage payments here." GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+  <HBox spacing="8" GridPane.rowIndex="9" GridPane.columnIndex="1">
+    <Button fx:id="saveButton" styleClass="btn-primary" text="Save" onAction="#onSave" defaultButton="true"/>
+    <Button text="Cancel" onAction="#onCancel" cancelButton="true"/></HBox>
+</GridPane>

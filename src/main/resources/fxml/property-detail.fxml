@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="screen" prefWidth="940" prefHeight="620" fx:controller="com.estateflow.controller.PropertyDetailController">
-  <Label fx:id="titleLabel" styleClass="screen-title"/>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="page" prefWidth="940" prefHeight="620" fx:controller="com.estateflow.controller.PropertyDetailController">
+  <Label fx:id="titleLabel" styleClass="page-title"/>
   <Label fx:id="subtitleLabel" styleClass="hint"/>
   <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
     <Tab text="Overview">

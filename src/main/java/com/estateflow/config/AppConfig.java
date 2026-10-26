@@ -15,6 +15,7 @@ import java.util.Properties;
 public final class AppConfig {
 
     public static final String DB_PROPERTIES_PROPERTY = "estateflow.db.config";
+    public static final String DB_PROPERTIES_ENV = "ESTATEFLOW_DB_CONFIG";
     private static final String DEFAULTS_RESOURCE = "config/application.properties";
 
     private final Properties values;
@@ -23,20 +24,23 @@ public final class AppConfig {
         this.values = values;
     }
 
-    /** Loads defaults and the external db.properties (system property, ./db.properties or ./db/db.properties). */
+    /** Loads defaults and the external database properties, preferring explicit, environment, then per-user config. */
     public static AppConfig load() {
-        String explicit = System.getProperty(DB_PROPERTIES_PROPERTY);
-        if (explicit != null && !explicit.isBlank()) {
-            return load(Path.of(explicit));
-        }
+        Path selected = resolveDbPropertiesPath(System.getProperty(DB_PROPERTIES_PROPERTY),
+                System.getenv(DB_PROPERTIES_ENV), Path.of(System.getProperty("user.home")), Path.of("."));
+        return load(selected);
+    }
+
+    static Path resolveDbPropertiesPath(String explicit, String environment, Path userHome, Path workingDirectory) {
+        if (explicit != null && !explicit.isBlank()) return Path.of(explicit.trim());
+        if (environment != null && !environment.isBlank()) return Path.of(environment.trim());
+        Path perUser = userHome.resolve(".estateflow").resolve("db.properties");
+        if (Files.isRegularFile(perUser)) return perUser;
         for (String candidate : new String[]{"db.properties", "db/db.properties"}) {
-            Path path = Path.of(candidate);
-            if (Files.isRegularFile(path)) {
-                return load(path);
-            }
+            Path legacy = workingDirectory.resolve(candidate);
+            if (Files.isRegularFile(legacy)) return legacy;
         }
-        throw new ConfigurationException("Database configuration not found. Copy db/db.properties.example to "
-                + "db.properties, fill in your MySQL credentials, and start the application from the project folder.");
+        return perUser;
     }
 
     /** Loads defaults and the given external database properties file. */
@@ -50,7 +54,9 @@ public final class AppConfig {
             throw new ConfigurationException("Could not read " + DEFAULTS_RESOURCE, e);
         }
         if (!Files.isRegularFile(dbProperties)) {
-            throw new ConfigurationException("Database configuration file not found: " + dbProperties);
+            throw new ConfigurationException("Database configuration file not found: " + dbProperties
+                    + ". Copy db/db.properties.example to this path and add your MySQL connection details. "
+                    + "The file is local and must not be shared or committed.");
         }
         try (InputStream in = Files.newInputStream(dbProperties)) {
             merged.load(in);
@@ -81,6 +87,11 @@ public final class AppConfig {
         if (reminderDays < 0 || reminderDays > 90) {
             throw new ConfigurationException("rent.reminder.days must be between 0 and 90.");
         }
+        faceMatchThreshold();
+        faceDetectionScoreThreshold();
+        faceCameraTimeoutSeconds();
+        faceLoginEnabled();
+        assistantProvider();
     }
 
     private String require(String key) {
@@ -121,5 +132,57 @@ public final class AppConfig {
         } catch (NumberFormatException e) {
             throw new ConfigurationException("lease.expiry.warning.days must be a whole number but was '" + raw + "'", e);
         }
+    }
+
+    public Path faceModelsDirectory() {
+        String configured=values.getProperty("face.models.directory", "").trim();
+        if(configured.isEmpty()) {
+            String local=System.getenv("LOCALAPPDATA");
+            return (local==null || local.isBlank()?Path.of(System.getProperty("user.home"),"AppData","Local"):Path.of(local)).resolve("EstateFlow").resolve("models").toAbsolutePath().normalize();
+        }
+        return Path.of(configured).toAbsolutePath().normalize();
+    }
+
+    /** Initial experimental SFace cosine reference only; real-device calibration remains required. */
+    public double faceMatchThreshold() {
+        String raw=values.getProperty("face.match.threshold","0.363").trim();
+        try { double value=Double.parseDouble(raw); if(Double.isFinite(value)&&value>=.363&&value<=.90)return value; }
+        catch(NumberFormatException e) { throw new ConfigurationException("face.match.threshold must be between 0.363 and 0.90; values below the experimental reference are not allowed.",e); }
+        throw new ConfigurationException("face.match.threshold must be between 0.363 and 0.90; values below the experimental reference are not allowed.");
+    }
+
+    /** YuNet detector confidence cutoff; 0.70 improves ordinary webcam recall while retaining detector confidence filtering. */
+    public double faceDetectionScoreThreshold() {
+        String raw=values.getProperty("face.detection.score.threshold","0.70").trim();
+        try { double value=Double.parseDouble(raw); if(Double.isFinite(value)&&value>=.50&&value<=.90)return value; }
+        catch(NumberFormatException e) { throw new ConfigurationException("face.detection.score.threshold must be between 0.50 and 0.90.",e); }
+        throw new ConfigurationException("face.detection.score.threshold must be between 0.50 and 0.90.");
+    }
+
+    public int faceCameraTimeoutSeconds() {
+        String raw=values.getProperty("face.camera.timeout.seconds","8").trim();
+        try { int value=Integer.parseInt(raw); if(value>=2&&value<=30)return value; }
+        catch(NumberFormatException e) { throw new ConfigurationException("face.camera.timeout.seconds must be a whole number from 2 to 30.",e); }
+        throw new ConfigurationException("face.camera.timeout.seconds must be a whole number from 2 to 30.");
+    }
+
+    /** Global safety gate; face login stays disabled until model and hardware validation is completed. */
+    public boolean faceLoginEnabled() {
+        String override = System.getProperty("estateflow.face.login.enabled");
+        String raw = (override == null ? values.getProperty("face.login.enabled", "false") : override).trim();
+
+        if ("true".equalsIgnoreCase(raw)) return true;
+        if ("false".equalsIgnoreCase(raw)) return false;
+
+        throw new ConfigurationException("face.login.enabled must be true or false.");
+    }
+
+    /** General AI is explicitly off until a separately reviewed provider is implemented and configured. */
+    public String assistantProvider() {
+        String provider=values.getProperty("assistant.provider","none").trim().toLowerCase(java.util.Locale.ROOT);
+        if (!"none".equals(provider)) {
+            throw new ConfigurationException("assistant.provider currently supports only 'none'; no external AI provider is installed.");
+        }
+        return provider;
     }
 }
