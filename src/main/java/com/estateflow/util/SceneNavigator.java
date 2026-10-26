@@ -168,12 +168,7 @@ public final class SceneNavigator {
     /** Shows a screen in the content area and returns its controller for further setup. */
     public <C> C show(String fxmlName) {
         Loaded<C> loaded = load(fxmlName);
-        Node page = loaded.root();
-        // Page FXMLs historically owned their own ScrollPane. The shell now owns the one
-        // vertical viewport, so unwrap those roots to avoid competing nested page scrollers.
-        if (page instanceof ScrollPane pageScroll && pageScroll.getContent() != null) {
-            page = pageScroll.getContent();
-        }
+        Node page = unwrapPageScrollPane(loaded.root());
         // Preserve the page's natural vertical layout size. The viewport controls width,
         // while the page keeps its preferred height and can therefore extend below it.
         if (page instanceof Region region) {
@@ -183,6 +178,14 @@ public final class SceneNavigator {
         contentArea.setVvalue(0);
         screenListener.accept(fxmlName);
         return loaded.controller();
+    }
+
+    /** Page FXMLs may provide a root ScrollPane; put its content into the shell's single viewport. */
+    static Node unwrapPageScrollPane(Node page) {
+        if (page instanceof ScrollPane pageScroll && pageScroll.getContent() != null) {
+            return pageScroll.getContent();
+        }
+        return page;
     }
 
     /** Opens a modal dialog; the init callback receives the controller before the dialog is shown. */

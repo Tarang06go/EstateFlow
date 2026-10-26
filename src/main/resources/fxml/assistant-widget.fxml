@@ -4,7 +4,7 @@
 <?import javafx.scene.shape.Circle?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.estateflow.controller.AssistantWidgetController"
             fx:id="dock" styleClass="assistant-dock" pickOnBounds="false"
-            maxWidth="Infinity" maxHeight="Infinity">
+            maxWidth="420" maxHeight="620">
   <VBox fx:id="dockContent" alignment="BOTTOM_RIGHT" spacing="12" pickOnBounds="false"
         maxWidth="Infinity" maxHeight="Infinity"
         style="-fx-padding: 0;" AnchorPane.rightAnchor="24" AnchorPane.bottomAnchor="24">
